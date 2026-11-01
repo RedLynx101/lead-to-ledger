@@ -1,0 +1,3 @@
+$ node scripts/set-mode.ts live --report results/scoring/test-granite-4.1-8b.json --signed-off-by "Example Reviewer"
+refused: that run missed the pass bar on real_lead_lost_rate. To go live anyway, say why with --below-bar. It is recorded.
+exit code: 1

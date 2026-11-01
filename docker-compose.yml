@@ -3,7 +3,7 @@
 #
 # By default this needs no accounts and no GPU: HubSpot and QuickBooks are simulators,
 # and the model is a scripted stand-in. To use a real local model:
-#   APP_LLM_BASE_URL=http://host.docker.internal:1234/v1 APP_LLM_MODEL=prism-ml/bonsai-27b docker compose up --build
+#   APP_LLM_BASE_URL=http://host.docker.internal:1234/v1 APP_LLM_MODEL=granite-4.1-8b docker compose up --build
 name: lead-to-ledger
 
 services:

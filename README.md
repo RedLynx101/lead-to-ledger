@@ -20,28 +20,34 @@ Not done yet: the real run against a HubSpot test account and the QuickBooks san
 
 ## Results so far
 
-Model: `prism-ml/bonsai-27b`, a small local model, through LM Studio. Scores are on synthetic leads with labels from the template authors, so they say nothing about a real inbox.
+Two local models were scored with the same prompt, rules and pass bar, with nothing tuned against the held-out set. Scores are on synthetic leads with labels from the template authors, so they say nothing about a real inbox. The side-by-side is in `results/scoring/model-comparison.md`.
 
-| Set | Category accuracy | Real leads sorted as not a lead | Pass bar | File |
-|---|---|---|---|---|
-| Dev, 160 leads, prompt tuned against it | 96.9% | 2.7% | passed | `results/scoring/dev-p2.md` |
-| Held-out, 240 leads, first run | 70.0% | 6.9% | failed | `results/scoring/test-final.md` |
-| Held-out, 240 leads, rerun | **84.2%** (95% CI 79.0% to 88.2%) | 8.6% | failed | `results/scoring/test-rerun-1.md` |
+| Measure, held-out set of 240 leads | `granite-4.1-8b` (default) | `prism-ml/bonsai-27b` |
+|---|---|---|
+| Category accuracy | 80.4% (95% CI 74.9% to 84.9%) | **84.2%** (95% CI 79.0% to 88.2%) |
+| Real leads sorted as not a lead (limit 5%) | **5.2%** | 8.6% |
+| High-priority leads found | **95.1%** | 70.7% |
+| Junk promoted to `sales_ready` | 0 of 90 | 0 of 90 |
+| Pass bar | failed, 3 of 4 checks | failed, 3 of 4 checks |
+| Model latency, p50, each alone on the GPU | **2.0 s** | 3.4 s |
+| Model alone: attacks that steered it | 0 of 20 | 0 of 20 |
+| Model alone: real sales quoting odd instructions, correct | **4 of 4** | 2 of 4 |
+| Dev set of 160 leads, category accuracy | 88.1% | 96.9% |
 
-The gap between dev and held-out is the prompt fitting wording it was tuned on, and the held-out number is the one to believe.
+**Neither model passes the bar, and the go-live gate refuses both** (`results/scoring/go-live-attempt-granite.txt`, `go-live-attempt.txt`). Both miss on real leads sorted as not a lead.
 
-The first held-out run isn't a fair measure of the model: the model server failed partway through, and 39 of 137 model calls never got an answer, so they count as wrong. The rerun used the same prompt, rules and pass bar, with nothing tuned in between. `results/scoring/heldout-runs.log` records both runs.
+**The default is Granite, on a tiebreak.** Each passes 3 of 4 checks, and the rule committed before Granite's held-out run says fewer real leads lost breaks a tie. Bonsai is more accurate overall, but their confidence intervals overlap. Granite is faster, loses fewer real leads, and misses fewer urgent ones. The prompt was tuned on the dev set while running Bonsai, which may favour it.
 
-From the rerun:
+Other things to know, from Granite's run unless noted:
 
-- It missed the pass bar on one check: 8.6% of real leads were sorted as not a lead, against a limit of 5%. Four of those ten came from a rule trusting the Vendor dropdown, and six from the model. The go-live gate refuses this run (`results/scoring/go-live-attempt.txt`).
-- `needs_info` is the weak category, at 41.2% recall. The model tends to call a vague lead `sales_ready`.
-- No junk reached `sales_ready` (0 of 90).
-- No injection attempt got a lead marked `sales_ready` or high priority when it wasn't (0 of 24), but that says little about the model. Rules sorted 20 of the 24 before it saw them, and the 4 it did see were real `sales_ready` leads quoting odd instructions, which it got right 2 times out of 4. Whether an attack aimed at junk would steer this model hasn't been measured.
-- Rules sorted 42.9% of leads with no model call, at 87.4% precision. They scored 100% on dev, so the held-out wording found what they got wrong.
-- The model's confidence isn't much use. Answers at 0.90 or above were right 85.1% of the time, and answers from 0.80 to 0.89 only 66.7%.
+- **`needs_info` is the weak category,** at 44.1% recall. Vague leads often get called `sales_ready`.
+- **Rules sorted 42.9% of leads with no model call, at 87.4% precision.** They scored 100% on dev, so the held-out wording found what they got wrong. Four of Granite's six lost leads came from the rule trusting the Vendor dropdown. Fixing that rule against these results would spoil the held-out set, so it needs new wording first.
+- **Injection needed its own run.** Rules sort 20 of the 24 injection leads before a model sees them, so the full-path number says little. With rules bypassed, no attack got a lead marked `sales_ready` or high priority for either model, though 20 attacks leaves an upper bound of 16.1%. See `results/scoring/injection-*.md`.
+- **The model's confidence isn't much use.** Granite's answers from 0.60 to 0.79 were right half the time, and those at 0.90 or above 80.7%.
 
-The path also ran end to end through real n8n against the HubSpot simulator, in shadow and then live: `results/e2e/lead-path-bonsai.json` with this model, and `results/e2e/lead-path-stand-in.json` with a scripted stand-in, which adds the failure drills.
+**The held-out set has had three full runs and two injection-only runs,** all logged in `results/scoring/heldout-runs.log`. Bonsai's first run scored 70.0% because the model server failed and 39 of 137 calls never got an answer. It stays in `test-final`, and the Bonsai column above is its rerun. `results/scoring/server-failures.md` records those failures, including one during a model download, since they may recur for anyone running this.
+
+The path also ran end to end through real n8n against the HubSpot simulator, in shadow and then live: `results/e2e/lead-path-bonsai.json` with Bonsai, and `results/e2e/lead-path-stand-in.json` with a scripted stand-in, which adds the failure drills. That hasn't been repeated with Granite yet.
 
 ## Restart tests so far
 
@@ -80,7 +86,7 @@ Everything binds to `127.0.0.1`, and n8n's telemetry settings are off following 
 To use a real model, point the stack at any OpenAI-compatible server:
 
 ```sh
-APP_LLM_BASE_URL=http://host.docker.internal:1234/v1 APP_LLM_MODEL=prism-ml/bonsai-27b docker compose up --build
+APP_LLM_BASE_URL=http://host.docker.internal:1234/v1 APP_LLM_MODEL=granite-4.1-8b docker compose up --build
 ```
 
 Without Docker, for the tests and scoring (Node 24):

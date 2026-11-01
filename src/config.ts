@@ -48,7 +48,7 @@ export interface LlmSettings {
 export function llmSettings(): LlmSettings {
   return {
     baseUrl: process.env.LLM_BASE_URL ?? 'http://localhost:1234/v1',
-    model: process.env.LLM_MODEL ?? 'prism-ml/bonsai-27b',
+    model: process.env.LLM_MODEL ?? 'granite-4.1-8b',
     apiKey: process.env.LLM_API_KEY ?? 'lm-studio',
   };
 }
