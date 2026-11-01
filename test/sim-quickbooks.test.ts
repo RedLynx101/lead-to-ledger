@@ -393,6 +393,16 @@ describe('QuickBooks simulator', () => {
       await api('POST', '/invoice', invoiceBody(a.body.Customer.Id, { DocNumber: 'LTL-Q1' }));
     });
 
+    test('a query lag hides a new record from queries, but not from a read by ID', async () => {
+      await configure({ queryLagMs: 60_000 });
+      const made = await api('POST', '/customer', { DisplayName: 'Lagging Co' });
+      assert.equal(made.status, 200);
+      assert.deepEqual((await query("SELECT * FROM Customer WHERE DisplayName = 'Lagging Co'")).body.QueryResponse, {});
+      assert.equal((await api('GET', `/customer/${made.body.Customer.Id}`)).status, 200);
+      // The name is still taken, even though a query can't see it yet.
+      assert.equal((await api('POST', '/customer', { DisplayName: 'Lagging Co' })).body.Fault.Error[0].code, '6240');
+    });
+
     test('find an invoice by DocNumber', async () => {
       const res = await query("SELECT * FROM Invoice WHERE DocNumber = 'LTL-Q1'");
       assert.equal(res.body.QueryResponse.Invoice.length, 1);

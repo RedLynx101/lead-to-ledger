@@ -31,6 +31,11 @@ export interface QuickBooksConfig {
   /** Preferences.SalesFormsPrefs.CustomTxnNumbers */
   customTxnNumbers: boolean;
   rejectDuplicateDocNum: boolean;
+  /**
+   * How long a new record stays out of query results. Intuit's docs don't say a query
+   * sees a write at once, and the worker's lookups depend on it, so it can be delayed.
+   */
+  queryLagMs: number;
   accessTokenTtlSeconds: number;
   /**
    * 'every_refresh' invalidates the old refresh token on each use, the harshest
@@ -51,6 +56,7 @@ const DEFAULT_CONFIG: QuickBooksConfig = {
   requestid: { customer: 'replay', invoice: 'replay' },
   customTxnNumbers: false,
   rejectDuplicateDocNum: false,
+  queryLagMs: 0,
   accessTokenTtlSeconds: 3600,
   refreshRotation: 'every_refresh',
   enforceRateLimits: true,
@@ -321,10 +327,11 @@ export function createQuickBooksSim(overrides: Partial<QuickBooksConfig> = {}): 
   let accessTokens = new Map<string, number>();
   let tokensForcedExpired = false;
   let hits: number[] = [];
+  const visibleToQueryAt = new WeakMap<object, number>();
 
   function makeEntity<T extends Record<string, unknown>>(fields: T): Entity & T {
     const now = timestamp();
-    return {
+    const entity = {
       ...fields,
       domain: 'QBO',
       sparse: false,
@@ -332,6 +339,8 @@ export function createQuickBooksSim(overrides: Partial<QuickBooksConfig> = {}): 
       SyncToken: '0',
       MetaData: { CreateTime: now, LastUpdatedTime: now },
     };
+    visibleToQueryAt.set(entity, Date.now() + config.queryLagMs);
+    return entity;
   }
 
   function seed(): void {
@@ -623,7 +632,8 @@ export function createQuickBooksSim(overrides: Partial<QuickBooksConfig> = {}): 
     const stores: Record<string, Map<string, Entity>> = { customer: customers, invoice: invoices, item: items };
     const store = stores[parsed.entity.toLowerCase()];
     if (!store) return validationFault('4001', 'Invalid query', `QueryValidationError: unsupported entity ${parsed.entity}`);
-    let rows = [...store.values()].filter((row) => parsed.where.every((w) => matches(readAttribute(row, w.property), w.op, w.values)));
+    const now = Date.now();
+    let rows = [...store.values()].filter((row) => (visibleToQueryAt.get(row) ?? 0) <= now && parsed.where.every((w) => matches(readAttribute(row, w.property), w.op, w.values)));
     if (parsed.count) return { status: 200, body: { QueryResponse: { totalCount: rows.length }, time: timestamp() } };
     if (parsed.orderBy) {
       const { property, descending } = parsed.orderBy;

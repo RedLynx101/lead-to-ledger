@@ -13,8 +13,10 @@ Built:
 - **Simulators** with failure injection: timeouts, responses lost after the write committed, 429 and 5xx, and expired tokens.
 - **Labeled synthetic leads** for a fictional HVAC contractor, from a seed. All names, addresses and phone numbers are made up, on domains and number blocks reserved for documentation.
 - **The lead path:** form, self-hosted n8n, rules, a local model behind a strict schema, `ai_` fields only, shadow mode, and a go-live gate. `docs/lead-path.md` covers what each failure does.
+- **The invoice path:** a poller finds won deals, a person approves one exact version on `/approvals`, and a worker creates the customer and invoice with keys, lookups and a read-back. `docs/invoice-path.md` covers what stops a duplicate and where a gap remains.
+- **Restart tests** that kill a real worker process before, during and after each API call and count what exists.
 
-Not built yet: the invoice path, the restart tests, and the real run.
+Not done yet: the real run against a HubSpot test account and the QuickBooks sandbox. `docs/real-run.md` has the steps. Until then, this says nothing about whether `requestid` works on each record type.
 
 ## Results so far
 

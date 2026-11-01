@@ -8,6 +8,8 @@ import { hubspotSettings, llmSettings, ROOT } from '../config.ts';
 import { createDb, migrate } from '../db.ts';
 import { HubSpotClient } from '../hubspot/client.ts';
 import { ensureProperties } from '../hubspot/properties.ts';
+import { approveJob } from '../worker/jobs.ts';
+import { APPROVAL_MESSAGES, listJobs, renderApprovalsPage } from './approvals.ts';
 import { handOffPending, receiveLead } from './intake.ts';
 import { renderStatusPage, statusData } from './status.ts';
 import { currentMode, raiseAlert, retryFailedWrites, triage } from '../triage/service.ts';
@@ -65,6 +67,19 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/healthz') return sendJson(res, 200, { ok: true, mode: await currentMode(db) });
     if (req.method === 'GET' && url.pathname === '/status') return sendHtml(res, 200, renderStatusPage(await statusData(db)));
     if (req.method === 'GET' && url.pathname === '/api/status') return sendJson(res, 200, await statusData(db));
+    if (req.method === 'GET' && url.pathname === '/approvals') {
+      return sendHtml(res, 200, renderApprovalsPage(await listJobs(db), APPROVAL_MESSAGES[url.searchParams.get('notice') ?? '']));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/jobs') return sendJson(res, 200, { jobs: await listJobs(db) });
+
+    const approve = url.pathname.match(/^\/approvals\/([0-9a-f-]{36})\/approve$/);
+    if (approve && req.method === 'POST') {
+      const fields = new URLSearchParams(await readBody(req));
+      const result = await approveJob(db, approve[1], fields.get('digest') ?? '', fields.get('approved_by') ?? '');
+      res.writeHead(303, { location: result.ok ? '/approvals' : `/approvals?notice=${result.reason}` });
+      res.end();
+      return;
+    }
 
     if (req.method === 'POST' && url.pathname === '/submit') {
       const raw = await readBody(req);

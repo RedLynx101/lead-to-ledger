@@ -151,6 +151,64 @@ export class HubSpotClient {
     return this.request<CrmRecord>('PATCH', url, { properties: fields }, true);
   }
 
+  /** Deals in a stage, modified at or after a time, oldest first. Lags writes, so callers overlap their cursor. */
+  async searchDealsInStage(stage: string, modifiedSinceMs: number, properties: string[], after?: string): Promise<{ results: CrmRecord[]; next?: string }> {
+    const body = {
+      filterGroups: [
+        {
+          filters: [
+            { propertyName: 'dealstage', operator: 'EQ', value: stage },
+            { propertyName: 'hs_lastmodifieddate', operator: 'GTE', value: String(modifiedSinceMs) },
+          ],
+        },
+      ],
+      sorts: [{ propertyName: 'hs_lastmodifieddate', direction: 'ASCENDING' }],
+      properties,
+      limit: 100,
+      ...(after ? { after } : {}),
+    };
+    const res = await this.request<{ results: CrmRecord[]; paging?: { next?: { after?: string } } }>('POST', this.path('objects', 'deals/search'), body, true);
+    return { results: res.results, next: res.paging?.next?.after };
+  }
+
+  async getDeal(id: string, properties: string[]): Promise<CrmRecord | null> {
+    const query = new URLSearchParams({ properties: properties.join(','), associations: 'contacts' });
+    try {
+      return await this.request<CrmRecord>('GET', `${this.path('objects', `deals/${id}`)}?${query}`, undefined, true);
+    } catch (error) {
+      if (error instanceof HubSpotError && error.status === 404) return null;
+      throw error;
+    }
+  }
+
+  async getContact(id: string, properties: string[]): Promise<CrmRecord | null> {
+    const query = new URLSearchParams({ properties: properties.join(',') });
+    try {
+      return await this.request<CrmRecord>('GET', `${this.path('objects', `contacts/${id}`)}?${query}`, undefined, true);
+    } catch (error) {
+      if (error instanceof HubSpotError && error.status === 404) return null;
+      throw error;
+    }
+  }
+
+  /** The worker's only CRM write, limited to ltl_ fields. Safe to repeat: same values, same result. */
+  async writeDealLedgerFields(id: string, fields: Record<string, string>): Promise<CrmRecord> {
+    const bad = Object.keys(fields).filter((name) => !name.startsWith('ltl_'));
+    if (bad.length > 0) throw new Error(`refusing to write non-ltl_ deal properties: ${bad.join(', ')}`);
+    return this.request<CrmRecord>('PATCH', this.path('objects', `deals/${id}`), { properties: fields }, true);
+  }
+
+  /** For demos and tests. A plain create has no idempotency key, so it doesn't retry. */
+  async createDeal(properties: Record<string, string>, contactId?: string): Promise<CrmRecord> {
+    const associations = contactId ? [{ to: { id: contactId }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 3 }] }] : [];
+    return this.request<CrmRecord>('POST', this.path('objects', 'deals'), { properties, associations }, false);
+  }
+
+  /** For demos and tests: moves a deal the way a salesperson would. */
+  async updateDeal(id: string, properties: Record<string, string>): Promise<CrmRecord> {
+    return this.request<CrmRecord>('PATCH', this.path('objects', `deals/${id}`), { properties }, true);
+  }
+
   async createPropertyGroup(objectType: string, name: string, label: string): Promise<'created' | 'exists'> {
     try {
       await this.request('POST', this.path('properties', `${objectType}/groups`), { name, label }, false);

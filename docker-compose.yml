@@ -63,6 +63,24 @@ services:
       timeout: 3s
       retries: 30
 
+  worker:
+    build: .
+    command: ["node", "src/worker/main.ts"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      simulators: { condition: service_healthy }
+    environment:
+      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/ltl
+      HUBSPOT_BASE_URL: ${APP_HUBSPOT_BASE_URL:-http://simulators:4010}
+      HUBSPOT_API_VERSION: ${HUBSPOT_API_VERSION:-2026-09}
+      QB_API_BASE_URL: ${APP_QB_API_BASE_URL:-http://simulators:4020}
+      LTL_AUTO_CONNECT_SIM: ${LTL_AUTO_CONNECT_SIM:-true}
+      LTL_POLL_MS: ${LTL_POLL_MS:-5000}
+      LTL_SETTLE_MS: ${LTL_SETTLE_MS:-5000}
+      LTL_RETRY_DELAY_MS: ${LTL_RETRY_DELAY_MS:-2000}
+      # A fixed key, fine for the simulator's made-up tokens. The real connection generates its own.
+      LTL_TOKEN_KEY: ${LTL_TOKEN_KEY:-MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=}
+
   n8n:
     image: n8nio/n8n:2.45.7
     depends_on:

@@ -1,0 +1,106 @@
+{
+  "synthetic": true,
+  "services": "HubSpot and QuickBooks simulators, not the real APIs",
+  "git_commit": "8e6d2e7",
+  "git_dirty": true,
+  "started_at": "2026-11-01T17:46:03.551Z",
+  "finished_at": "2026-11-01T17:48:32.772Z",
+  "checks_total": 17,
+  "checks_failed": 0,
+  "checks": [
+    {
+      "name": "a deal that is not won creates no job",
+      "pass": true
+    },
+    {
+      "name": "the poller created one job when the deal was won",
+      "pass": true,
+      "detail": "awaiting_approval"
+    },
+    {
+      "name": "nothing has reached QuickBooks before approval",
+      "pass": true
+    },
+    {
+      "name": "the approval page shows the customer and amount",
+      "pass": true
+    },
+    {
+      "name": "approving through the page works",
+      "pass": true,
+      "detail": {
+        "status": 303,
+        "location": "/approvals"
+      }
+    },
+    {
+      "name": "one customer and one invoice exist",
+      "pass": true,
+      "detail": {
+        "invoices": 1
+      }
+    },
+    {
+      "name": "the invoice has the deal amount and number",
+      "pass": true
+    },
+    {
+      "name": "the invoice is noted on the deal",
+      "pass": true
+    },
+    {
+      "name": "a second approval is refused",
+      "pass": true,
+      "detail": {
+        "status": 303,
+        "location": "/approvals?notice=not_awaiting_approval"
+      }
+    },
+    {
+      "name": "the invoice request reached QuickBooks",
+      "pass": true
+    },
+    {
+      "name": "the worker container was killed mid-write",
+      "pass": true
+    },
+    {
+      "name": "the write landed anyway, with no worker to hear about it",
+      "pass": true
+    },
+    {
+      "name": "after the restart there is still one invoice for that deal",
+      "pass": true
+    },
+    {
+      "name": "the second worker found what the first one wrote",
+      "pass": true,
+      "detail": [
+        "created",
+        "approved",
+        "claimed",
+        "created",
+        "claimed",
+        "unknown_outcome_resolving",
+        "found_existing",
+        "done"
+      ]
+    },
+    {
+      "name": "an edit after approval sends the job back with the new amount",
+      "pass": true
+    },
+    {
+      "name": "no invoice was made from the edited deal",
+      "pass": true
+    },
+    {
+      "name": "the old content cannot be approved any more",
+      "pass": true,
+      "detail": {
+        "status": 303,
+        "location": "/approvals?notice=stale_digest"
+      }
+    }
+  ]
+}

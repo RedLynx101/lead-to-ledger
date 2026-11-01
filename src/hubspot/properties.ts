@@ -40,11 +40,23 @@ export const CONTACT_PROPERTIES = [
   },
 ];
 
+export const LEDGER_GROUP = { name: 'ltl_ledger', label: 'Ledger' };
+
+/** Where the worker records the invoice on the deal, so sales can see it without opening QuickBooks. */
+export const DEAL_PROPERTIES = [
+  { groupName: LEDGER_GROUP.name, name: 'ltl_qb_invoice_id', label: 'QuickBooks invoice ID', type: 'string', fieldType: 'text' },
+  { groupName: LEDGER_GROUP.name, name: 'ltl_qb_doc_number', label: 'QuickBooks invoice number', type: 'string', fieldType: 'text' },
+];
+
 export async function ensureProperties(client: HubSpotClient): Promise<Record<string, string>> {
   const results: Record<string, string> = {};
   results[`group:${AI_GROUP.name}`] = await client.createPropertyGroup('contacts', AI_GROUP.name, AI_GROUP.label);
   for (const definition of CONTACT_PROPERTIES) {
     results[definition.name] = await client.createProperty('contacts', definition);
+  }
+  results[`group:${LEDGER_GROUP.name}`] = await client.createPropertyGroup('deals', LEDGER_GROUP.name, LEDGER_GROUP.label);
+  for (const definition of DEAL_PROPERTIES) {
+    results[definition.name] = await client.createProperty('deals', definition);
   }
   return results;
 }

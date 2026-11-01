@@ -21,7 +21,11 @@
     "mode": "node scripts/set-mode.ts",
     "e2e:lead-path": "node scripts/e2e-lead-path.ts",
     "scan:repo": "node scripts/scan-repo.ts",
-    "export:workflow": "node scripts/export-workflow.ts"
+    "export:workflow": "node scripts/export-workflow.ts",
+    "worker": "node src/worker/main.ts",
+    "connect:quickbooks": "node scripts/connect-quickbooks.ts",
+    "test:restart": "node scripts/restart-tests.ts",
+    "e2e:invoice-path": "node scripts/e2e-invoice-path.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

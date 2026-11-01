@@ -80,7 +80,7 @@ Sources, all on developer.intuit.com under `/app/developer/qbo/docs/`:
 | OAuth URLs, `state` required, `code` single use, Basic auth, token response fields, 3,600-second access token | Docs | not yet |
 | Reusing a code returns `invalid_grant` and may revoke the first exchange's tokens | Docs | not yet |
 | Refresh token value changes at least every 24 hours; the old value stops working | Docs. The simulator's default rotates on every refresh, the harshest reading. `after_24h` is the other setting | not yet |
-| Redirect URIs must match exactly | Docs. The FAQ says `https` only with no IP addresses; whether `http://localhost` is allowed for development keys is unchecked | not yet |
+| Redirect URIs must match exactly | Docs. The redirect URI page allows localhost without HTTPS for sandbox apps, and the FAQ says `https` only with no IP addresses | not yet |
 | `POST /v3/company/{realm}/customer` and `/invoice` minimum bodies and response shape, including `time` | Docs | not yet |
 | DisplayName unique across customers, vendors and employees; no colon, tab or newline; Fault 6240 | Docs. The simulator checks customers only | not yet |
 | 6240 detail text naming the existing ID | Docs: "The customer ID is: XXX". Exact wording unverified, so clients shouldn't parse it | not yet |
@@ -96,6 +96,13 @@ Sources, all on developer.intuit.com under `/app/developer/qbo/docs/`:
 | API answers XML unless `Accept: application/json` | Docs mention `Accept` is optional and JSON is recommended. XML as the default is secondary | not yet |
 | Query syntax, ignores case, backslash escapes, no `OR`, `QueryResponse` shape | Docs. JSON field names come from the invoice sample | not yet |
 | Query with no match returns an empty `QueryResponse` | Assumed | not yet |
+| A query sees a new record at once | Assumed. The docs don't say, and the worker's lookups depend on it. No lag by default, and `queryLagMs` lets the restart tests measure what a lag would cost | not yet |
+| `Active IN (true, false)` includes inactive customers | Docs | not yet |
+| A customer's balance moves when an invoice is created | Assumed. The restart tests use it to spot a double charge | not yet |
 | Fault 4000 or 4001 on a bad query | Docs | not yet |
 | Sandbox company has sample customers and items, including `Services` | Docs samples, and the simulator's seed is smaller than the real set | not yet |
 | 502, 503 and 504 come back as HTML | Assumed: a gateway in front of the API | not yet |
+
+## The scripted model stand-in
+
+`src/simulators/llm.ts` isn't written from anyone's docs and isn't a model. It answers from keyword checks, so the stack runs with no GPU, and it can return bad output on command for tests. No score in this repo comes from it.
