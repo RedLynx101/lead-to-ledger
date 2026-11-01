@@ -159,6 +159,7 @@ const meta = {
 };
 
 function nextRerunStem(): string {
+  if (args.label) return `test-${args.label}`;
   let n = 1;
   while (existsSync(path.join(OUT_DIR, `test-rerun-${n}.json`))) n += 1;
   return `test-rerun-${n}`;

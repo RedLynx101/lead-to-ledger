@@ -25,7 +25,9 @@
     "worker": "node src/worker/main.ts",
     "connect:quickbooks": "node scripts/connect-quickbooks.ts",
     "test:restart": "node scripts/restart-tests.ts",
-    "e2e:invoice-path": "node scripts/e2e-invoice-path.ts"
+    "e2e:invoice-path": "node scripts/e2e-invoice-path.ts",
+    "score:injection": "node scripts/score-injection.ts",
+    "compare:models": "node scripts/compare-models.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
