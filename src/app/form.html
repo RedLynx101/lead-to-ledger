@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request service</title>
+<style>
+:root { --bg:#faf9f6; --ink:#17202a; --mute:#66707a; --line:#c9ced0; --teal:#0e6377; --teal-dark:#0a4c5c; --orange:#c2410c; --orange-bg:#fdeee3; --teal-bg:#e3f4f8; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:640px; margin:0 auto; padding:32px 20px 64px; }
+h1 { font-size:26px; line-height:1.2; margin:0 0 6px; }
+.lede { color:var(--mute); margin:0 0 18px; }
+.banner { background:var(--orange-bg); color:var(--orange); border-radius:6px; padding:10px 12px; font-size:14px; margin-bottom:22px; }
+.notice { background:var(--teal-bg); color:var(--teal-dark); border-radius:6px; padding:10px 12px; margin:0 0 18px; }
+.notice.error { background:var(--orange-bg); color:var(--orange); }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+label { display:block; font-weight:600; font-size:14px; margin-bottom:14px; }
+.hint { font-weight:400; color:var(--mute); }
+input, select, textarea { display:block; width:100%; margin-top:5px; padding:9px 10px; font:inherit; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:6px; }
+input:focus, select:focus, textarea:focus { outline:2px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
+textarea { min-height:130px; resize:vertical; }
+button { font:inherit; font-weight:600; color:#fff; background:var(--teal); border:0; border-radius:6px; padding:11px 20px; cursor:pointer; }
+button:hover { background:var(--teal-dark); }
+.hp { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+@media (max-width:520px) { .row { grid-template-columns:1fr; gap:0; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Example Mechanical Co.</h1>
+<p class="lede">Commercial HVAC maintenance, repair and replacement in the Columbus, Dayton and Cincinnati corridor and Northern Kentucky.</p>
+<p class="banner">Demo form for a fictional company. Use made-up details: every submission is treated as synthetic test data.</p>
+<!--notice-->
+<form method="post" action="/submit">
+  <input type="hidden" name="synthetic" value="true">
+  <div class="row">
+    <label>First name<input name="first_name" autocomplete="off"></label>
+    <label>Last name<input name="last_name" autocomplete="off"></label>
+  </div>
+  <div class="row">
+    <label>Email<input name="email" type="email" required autocomplete="off"></label>
+    <label>Phone <span class="hint">(optional)</span><input name="phone" autocomplete="off"></label>
+  </div>
+  <div class="row">
+    <label>Company <span class="hint">(optional)</span><input name="company" autocomplete="off"></label>
+    <label>Job title <span class="hint">(optional)</span><input name="job_title" autocomplete="off"></label>
+  </div>
+  <label>Website <span class="hint">(optional)</span><input name="website" autocomplete="off"></label>
+  <div class="row">
+    <label>Property city<input name="property_city" autocomplete="off"></label>
+    <label>Property state<input name="property_state" maxlength="2" autocomplete="off"></label>
+  </div>
+  <div class="row">
+    <label>What's this about?
+      <select name="inquiry_type">
+        <option value="new_project">A new project or quote</option>
+        <option value="existing_service">Service on an existing account</option>
+        <option value="careers">Careers</option>
+        <option value="vendor">I'm a vendor</option>
+        <option value="other">Something else</option>
+      </select>
+    </label>
+    <label>Customer number <span class="hint">(if you have one)</span><input name="customer_number" autocomplete="off"></label>
+  </div>
+  <label>How can we help?<textarea name="message" required></textarea></label>
+  <label class="hp" aria-hidden="true">Leave this empty<input name="hp_field" tabindex="-1" autocomplete="off"></label>
+  <button type="submit">Send</button>
+</form>
+</main>
+</body>
+</html>

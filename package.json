@@ -9,14 +9,27 @@
     "node": ">=24"
   },
   "scripts": {
-    "sim": "node src/simulators/main.ts",
-    "gen:leads": "node scripts/gen-leads.ts",
-    "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
+    "test": "node --test --test-reporter=spec \"test/*.test.ts\"",
+    "test:integration": "node --test --test-reporter=spec --test-concurrency=1 \"test/integration/*.test.ts\"",
     "typecheck": "tsc --noEmit",
-    "scan:repo": "node scripts/scan-repo.ts"
+    "sim": "node src/simulators/main.ts",
+    "app": "node src/app/server.ts",
+    "gen:leads": "node scripts/gen-leads.ts",
+    "build:workflow": "node scripts/build-workflow.ts",
+    "score": "node scripts/score.ts",
+    "setup:hubspot": "node scripts/setup-hubspot.ts",
+    "mode": "node scripts/set-mode.ts",
+    "e2e:lead-path": "node scripts/e2e-lead-path.ts",
+    "scan:repo": "node scripts/scan-repo.ts",
+    "export:workflow": "node scripts/export-workflow.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
     "typescript": "^5.8.0"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "pg": "^8.23.1"
   }
 }

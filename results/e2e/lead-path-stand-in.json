@@ -1,0 +1,201 @@
+{
+  "synthetic": true,
+  "crm": "HubSpot simulator",
+  "model": "scripted-stand-in",
+  "scripted_stand_in": true,
+  "n8n_version": "2.45.7",
+  "git_commit": "df9506e",
+  "git_dirty": true,
+  "leads": 24,
+  "shadow_outcomes": {
+    "ok": 19,
+    "rule": 5
+  },
+  "started_at": "2026-11-01T16:19:24.488Z",
+  "finished_at": "2026-11-01T16:20:41.017Z",
+  "checks_total": 31,
+  "checks_failed": 0,
+  "checks": [
+    {
+      "phase": "shadow",
+      "name": "a repeat submission is recognized at the form",
+      "pass": true
+    },
+    {
+      "phase": "shadow",
+      "name": "all 24 leads were triaged through n8n",
+      "pass": true,
+      "detail": {
+        "done": 24
+      }
+    },
+    {
+      "phase": "shadow",
+      "name": "no ai_ property was written",
+      "pass": true
+    },
+    {
+      "phase": "shadow",
+      "name": "the contact path wrote only form fields",
+      "pass": true
+    },
+    {
+      "phase": "shadow",
+      "name": "one contact per lead, minus those rules kept out of the CRM",
+      "pass": true,
+      "detail": {
+        "contacts": 24,
+        "expectedContacts": 24
+      }
+    },
+    {
+      "phase": "shadow",
+      "name": "every run is logged as shadow with no CRM write",
+      "pass": true
+    },
+    {
+      "phase": "shadow",
+      "name": "the rules in n8n sorted every lead the same way as the rules in src/",
+      "pass": true
+    },
+    {
+      "phase": "shadow",
+      "name": "what would be written is on record for each lead that has fields",
+      "pass": true
+    },
+    {
+      "phase": "live",
+      "name": "all 24 leads were triaged through n8n",
+      "pass": true,
+      "detail": {
+        "done": 24
+      }
+    },
+    {
+      "phase": "live",
+      "name": "triage wrote only ai_ properties, in writes separate from the contact path",
+      "pass": true
+    },
+    {
+      "phase": "live",
+      "name": "one ai_ write per lead that had something to write",
+      "pass": true,
+      "detail": {
+        "writes": 24,
+        "expected": 24
+      }
+    },
+    {
+      "phase": "live",
+      "name": "no CRM process field was ever touched",
+      "pass": true
+    },
+    {
+      "phase": "live",
+      "name": "one contact per lead, minus those rules kept out of the CRM",
+      "pass": true,
+      "detail": {
+        "contacts": 24,
+        "expectedContacts": 24
+      }
+    },
+    {
+      "phase": "live",
+      "name": "each contact holds the form values and the stored ai_ values",
+      "pass": true
+    },
+    {
+      "phase": "live",
+      "name": "a replayed webhook made no second ai_ write",
+      "pass": true,
+      "detail": {
+        "writesBefore": 24,
+        "writesAfter": 24
+      }
+    },
+    {
+      "phase": "live",
+      "name": "a replayed webhook left one contact",
+      "pass": true
+    },
+    {
+      "phase": "live",
+      "name": "a replayed webhook made no second model call",
+      "pass": true,
+      "detail": {
+        "callsBefore": 19,
+        "callsAfter": 19
+      }
+    },
+    {
+      "phase": "failures",
+      "name": "fault armed: model down",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "model down: the lead still reached the CRM through the form path",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "model down: no ai_ fields on it",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "model down: an alert was raised",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "model back: retriage filled in the ai_ fields",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "invalid output: no category written",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "invalid output: flagged for review",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "unknown category: no category written, flagged",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "low confidence: a summary but no category, flagged",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "CRM down: n8n raised an alert after its retries",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "CRM back: the re-drive delivered the lead, with no help",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "n8n down: the form still accepted the lead",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "n8n down: the lead is on disk, waiting",
+      "pass": true
+    },
+    {
+      "phase": "failures",
+      "name": "n8n back: the re-drive delivered the lead, with no help",
+      "pass": true
+    }
+  ]
+}

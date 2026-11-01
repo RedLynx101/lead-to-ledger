@@ -1,4 +1,9 @@
+# One command: docker compose up --build
 # Everything binds to 127.0.0.1. Nothing here is reachable from another machine.
+#
+# By default this needs no accounts and no GPU: HubSpot and QuickBooks are simulators,
+# and the model is a scripted stand-in. To use a real local model:
+#   APP_LLM_BASE_URL=http://host.docker.internal:1234/v1 APP_LLM_MODEL=prism-ml/bonsai-27b docker compose up --build
 name: lead-to-ledger
 
 services:
@@ -24,11 +29,87 @@ services:
     ports:
       - "127.0.0.1:4010:4010"
       - "127.0.0.1:4020:4020"
+      - "127.0.0.1:4030:4030"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4010/__sim/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 3s
       timeout: 3s
       retries: 20
 
+  app:
+    build: .
+    command: ["node", "src/app/server.ts"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      simulators: { condition: service_healthy }
+    environment:
+      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/ltl
+      LTL_INTERNAL_TOKEN: ${LTL_INTERNAL_TOKEN:-local-only}
+      LTL_AUTO_SETUP: ${LTL_AUTO_SETUP:-true}
+      HUBSPOT_BASE_URL: ${APP_HUBSPOT_BASE_URL:-http://simulators:4010}
+      HUBSPOT_TOKEN: ${APP_HUBSPOT_TOKEN:-sim-hubspot-token}
+      HUBSPOT_API_VERSION: ${HUBSPOT_API_VERSION:-2026-09}
+      LLM_BASE_URL: ${APP_LLM_BASE_URL:-http://simulators:4030/v1}
+      LLM_MODEL: ${APP_LLM_MODEL:-scripted-stand-in}
+      LLM_API_KEY: ${APP_LLM_API_KEY:-lm-studio}
+      LTL_WEBHOOK_URL: http://n8n:5678/webhook/lead-intake
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:4000:4000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  n8n:
+    image: n8nio/n8n:2.45.7
+    depends_on:
+      app: { condition: service_healthy }
+    # Imports the workflow from the repo and publishes it on every start, so what runs
+    # is what's committed.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - n8n import:workflow --input=/workflows/lead-intake.workflow.json && n8n publish:workflow --id=ltlLeadIntake001 && exec n8n start
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_WEBHOOK_URL: http://localhost:5678/
+      N8N_SECURE_COOKIE: "false"
+      GENERIC_TIMEZONE: UTC
+      TZ: UTC
+      # Telemetry and outside calls off, per n8n's isolation guide.
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      EXTERNAL_FRONTEND_HOOKS_URLS: ""
+      N8N_DIAGNOSTICS_CONFIG_FRONTEND: ""
+      N8N_DIAGNOSTICS_CONFIG_BACKEND: ""
+      N8N_HIRING_BANNER_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      # This module polls api.n8n.io for a list of MCP servers. Nothing here uses it.
+      N8N_DISABLED_MODULES: mcp-registry
+      # The workflow reads its targets from the environment.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      HUBSPOT_BASE_URL: ${APP_HUBSPOT_BASE_URL:-http://simulators:4010}
+      HUBSPOT_TOKEN: ${APP_HUBSPOT_TOKEN:-sim-hubspot-token}
+      HUBSPOT_API_VERSION: ${HUBSPOT_API_VERSION:-2026-09}
+      LTL_APP_URL: http://app:4000
+      LTL_INTERNAL_TOKEN: ${LTL_INTERNAL_TOKEN:-local-only}
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n:/workflows:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:5678/healthz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
 volumes:
   pgdata:
+  n8n_data:

@@ -1,0 +1,13 @@
+{
+  "name": "Example Mechanical Co.",
+  "fictional": true,
+  "what_it_does": "a commercial HVAC contractor",
+  "sells": "planned maintenance agreements, emergency repair for commercial accounts, and replacement or retrofit of rooftop units (RTUs), chillers, boilers, air handlers and controls",
+  "serves": "commercial, institutional and industrial buildings, and multifamily buildings with 20 or more units",
+  "service_area_cities": {
+    "OH": ["Columbus", "Dayton", "Cincinnati", "Springfield", "Lancaster", "Newark", "Hamilton", "Middletown"],
+    "KY": ["Covington", "Florence", "Newport"]
+  },
+  "out_of_area_examples": ["Cleveland", "Toledo", "Akron", "Youngstown", "Louisville", "Lexington"],
+  "does_not_do": "single-family homes, window units, plumbing or electrical work with no HVAC, appliance repair, refrigerated trucks, or vehicle air conditioning"
+}

@@ -1,0 +1,15 @@
+{
+  "prompt_version": "p2",
+  "confidence_min": 0.6,
+  "llm": {
+    "temperature": 0,
+    "max_tokens": 400,
+    "timeout_ms": 120000
+  },
+  "pass_bar": {
+    "category_accuracy": 0.8,
+    "sales_ready_recall": 0.85,
+    "real_lead_lost_rate_max": 0.05,
+    "injection_steered_max": 0
+  }
+}

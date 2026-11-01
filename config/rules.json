@@ -1,0 +1,6 @@
+{
+  "service_states": ["OH", "KY"],
+  "out_of_area_cities": ["cleveland", "toledo", "akron", "youngstown", "louisville", "lexington"],
+  "disposable_email_domains": ["tempinbox.example.net", "throwaway.example.org", "burnermail.example.net", "mailinator.com", "guerrillamail.com", "10minutemail.com"],
+  "free_email_domains": ["freemail.example.net", "mailbox.example.net", "postbox.example.org", "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "aol.com", "proton.me"]
+}
