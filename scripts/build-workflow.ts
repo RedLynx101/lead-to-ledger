@@ -130,7 +130,8 @@ export function buildWorkflow() {
         specifyBody: 'json',
         jsonBody:
           "={{ JSON.stringify({ submission_key: $('" + SORT_NODE + "').item.json.submission_key, form: $('" + SORT_NODE + "').item.json.form, rule: $('" + SORT_NODE + "').item.json.rule }) }}",
-        options: { timeout: 200000 },
+        // Calls wait their turn for the model, so a burst of leads needs a long timeout.
+        options: { timeout: 600000 },
       },
     },
     {

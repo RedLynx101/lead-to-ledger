@@ -18,7 +18,18 @@ import type { PipelineForm } from './pipeline.ts';
 
 export type TriageMode = 'shadow' | 'live';
 
-const LEASE_SECONDS = 300;
+// Longer than n8n's 10-minute wait, so a lead still queued for the model isn't taken over.
+const LEASE_SECONDS = 900;
+
+// One model call at a time. A local model on one GPU answers a burst of concurrent calls
+// by timing out on most of them, and scoring ran one at a time, so this is also what
+// was measured.
+let modelQueue: Promise<unknown> = Promise.resolve();
+function oneAtATime<T>(task: () => Promise<T>): Promise<T> {
+  const run = modelQueue.then(task, task);
+  modelQueue = run.catch(() => undefined);
+  return run;
+}
 
 /** Same email and same message is the same submission, whenever it arrives. */
 export function submissionKey(form: { email: string; message: string }): string {
@@ -160,7 +171,9 @@ export async function triage(deps: TriageDeps, input: TriageInput): Promise<Tria
   if (claimed.kind === 'retry' && claimed.row.outcome && claimed.row.outcome !== 'model_unavailable') {
     decision = decisionFromRow(claimed.row);
   } else {
-    const result = await runPipeline(input.form, llm, { rule: input.rule });
+    const result = input.rule
+      ? await runPipeline(input.form, llm, { rule: input.rule })
+      : await oneAtATime(() => runPipeline(input.form, llm, { rule: input.rule }));
     decision = result.decision;
     latencyMs = result.classifier?.latencyMs ?? null;
   }
@@ -218,6 +231,22 @@ export async function triage(deps: TriageDeps, input: TriageInput): Promise<Tria
     row = closed.rows[0];
   }
   return toResult(row, false);
+}
+
+/** Tries failed CRM writes again, using the stored answer. Called by the app's re-drive loop. */
+export async function retryFailedWrites(deps: TriageDeps, options: { olderThanSeconds?: number; maxAttempts?: number } = {}): Promise<number> {
+  const pending = await deps.db.query<{ key: string; form: PipelineForm }>(
+    `select t.key, s.form from triage_runs t join lead_submissions s using (key)
+     where t.status = 'write_failed' and t.attempts < $1 and t.updated_at < now() - make_interval(secs => $2)
+     order by t.updated_at limit 25`,
+    [options.maxAttempts ?? 6, options.olderThanSeconds ?? 60],
+  );
+  let written = 0;
+  for (const row of pending.rows) {
+    const result = await triage(deps, { submission_key: row.key, form: row.form, rule: null });
+    if (result.wrote_to_crm) written += 1;
+  }
+  return written;
 }
 
 export async function recordModeChange(

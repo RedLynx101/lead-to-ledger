@@ -10,7 +10,7 @@ import { HubSpotClient } from '../hubspot/client.ts';
 import { ensureProperties } from '../hubspot/properties.ts';
 import { handOffPending, receiveLead } from './intake.ts';
 import { renderStatusPage, statusData } from './status.ts';
-import { currentMode, raiseAlert, triage } from '../triage/service.ts';
+import { currentMode, raiseAlert, retryFailedWrites, triage } from '../triage/service.ts';
 import type { TriageInput } from '../triage/service.ts';
 
 const PORT = Number(process.env.LTL_APP_PORT ?? 4000);
@@ -108,6 +108,7 @@ const server = http.createServer(async (req, res) => {
 
 const timer = setInterval(() => {
   handOffPending(db, { webhookUrl: WEBHOOK_URL }).catch((error) => console.error('redrive failed:', (error as Error).message));
+  retryFailedWrites({ db, hubspot, llm }).catch((error) => console.error('write retry failed:', (error as Error).message));
 }, REDRIVE_MS);
 timer.unref();
 

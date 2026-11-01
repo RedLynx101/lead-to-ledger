@@ -19,7 +19,7 @@ import { handOffPending, normalizeForm, receiveLead } from '../../src/app/intake
 import { createHubSpotSim } from '../../src/simulators/hubspot.ts';
 import { createLlmSim } from '../../src/simulators/llm.ts';
 import type { SimServer } from '../../src/simulators/harness.ts';
-import { currentMode, recordModeChange, submissionKey, triage } from '../../src/triage/service.ts';
+import { currentMode, recordModeChange, retryFailedWrites, submissionKey, triage } from '../../src/triage/service.ts';
 import type { TriageDeps, TriageRow } from '../../src/triage/service.ts';
 import { addFault, simState, startSim } from '../helpers.ts';
 
@@ -192,6 +192,27 @@ describe('triage service', () => {
       assert.equal(await modelCalls(), 1);
       assert.equal((await row(key)).attempts, 2);
     });
+
+    test('different leads arriving together reach the model one at a time', async () => {
+      const http = await import('node:http');
+      let inFlight = 0;
+      let peak = 0;
+      const answer = JSON.stringify({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ category: 'needs_info', priority: 'normal', summary: 'x', confidence: 0.9 }) } }] });
+      const server = http.createServer((_req, res) => {
+        inFlight += 1;
+        peak = Math.max(peak, inFlight);
+        setTimeout(() => {
+          inFlight -= 1;
+          res.writeHead(200, { 'content-type': 'application/json' });
+          res.end(answer);
+        }, 40);
+      });
+      await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+      const llm = { baseUrl: `http://127.0.0.1:${(server.address() as { port: number }).port}/v1`, model: 'test', apiKey: 'x' };
+      await Promise.all([1, 2, 3, 4, 5].map((n) => triage({ ...deps, llm }, { form: form({ message: `Question number ${n}` }), rule: null })));
+      server.close();
+      assert.equal(peak, 1);
+    });
   });
 
   describe('failures', () => {
@@ -257,6 +278,22 @@ describe('triage service', () => {
       const retried = await triage(deps, { form: form(), rule: null });
       assert.equal(retried.wrote_to_crm, true);
       assert.equal(await modelCalls(), 1, 'the model already answered');
+    });
+
+    test('the re-drive loop retries a failed write, up to a limit, with no second model call', async () => {
+      await addFault(hubspotSim, { match: { method: 'PATCH' }, action: 'status', status: 500, times: 0 });
+      const failed = await triage(deps, { submission_key: submissionKey(form()), form: form(), rule: null });
+      await db.query('insert into lead_submissions (key, form, synthetic) values ($1, $2, true)', [failed.key, JSON.stringify(form())]);
+
+      assert.equal(await retryFailedWrites(deps), 0, 'too soon');
+      assert.equal(await retryFailedWrites(deps, { olderThanSeconds: 0 }), 0, 'CRM still down');
+      assert.equal((await row(failed.key)).attempts, 2);
+
+      await fetch(`${hubspotSim.url()}/__sim/faults`, { method: 'DELETE' });
+      assert.equal(await retryFailedWrites(deps, { olderThanSeconds: 0, maxAttempts: 2 }), 0, 'over the limit');
+      assert.equal(await retryFailedWrites(deps, { olderThanSeconds: 0 }), 1);
+      assert.equal((await row(failed.key)).status, 'done');
+      assert.equal(await modelCalls(), 1);
     });
 
     test('a lost response on the write retries and the contact holds one set of values', async () => {

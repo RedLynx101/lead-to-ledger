@@ -74,7 +74,7 @@ let leads = leadsText.trim().split('\n').map((line) => JSON.parse(line) as Label
 if (args.limit) leads = leads.slice(0, Number(args.limit));
 const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
 
-const label = args.label ?? (split === 'test' ? 'final' : 'run');
+const label = args.label ?? (split === 'test' ? (args['rerun-reason'] ? 'rerun' : 'final') : 'run');
 const startedAt = new Date().toISOString();
 if (split === 'test') {
   appendFileSync(HELDOUT_LOG, `${JSON.stringify({ at: startedAt, event: 'start', commit, model: llm.model, prompt_version: triageConfig.prompt_version, rerun_reason: args['rerun-reason'] ?? null })}\n`);

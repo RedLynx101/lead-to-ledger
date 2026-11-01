@@ -128,7 +128,7 @@
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ submission_key: $('Sort with rules').item.json.submission_key, form: $('Sort with rules').item.json.form, rule: $('Sort with rules').item.json.rule }) }}",
         "options": {
-          "timeout": 200000
+          "timeout": 600000
         }
       }
     },
