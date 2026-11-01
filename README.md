@@ -43,6 +43,25 @@ From the rerun:
 
 The path also ran end to end through real n8n against the HubSpot simulator, in shadow and then live: `results/e2e/lead-path-bonsai.json` with this model, and `results/e2e/lead-path-stand-in.json` with a scripted stand-in, which adds the failure drills.
 
+## Restart tests so far
+
+A real worker process was killed before, during and after each API call in the invoice path, against all three ways QuickBooks might treat a repeated `requestid`. A second worker finished each job, and the simulator counted what existed. All of this ran on the simulators. Results are in `results/restart/matrix.md`.
+
+| Group | Cells | Duplicates |
+|---|---|---|
+| Worker killed around one of 8 API calls | 81 | 0 |
+| Failures with no kill: lost responses, timeouts, 429, 5xx, HTML gateway pages, a 200 with a Fault, expired tokens | 84 | 0 |
+| A lookup forced to miss the record: a late commit or lagging queries | 13 | 2 invoices |
+| Killed during a token refresh | 6 | 0 |
+| Four workers on 12 jobs, one killed | 3 | 0 |
+
+- **The 2 duplicates are the known gap.** Both need QuickBooks to ignore `requestid` and allow repeated DocNumbers while a lookup misses the first record. The reconcile sweep found both and sent them to a person, so they were caught, not prevented. `docs/invoice-path.md` explains the case.
+- **The counts can see a duplicate.** With the worker's checks skipped, one blind retry after a lost response counted 2 invoices.
+- **A token refresh can lose the connection.** With rotation on every refresh, 2 of the 6 token cells needed a person to reconnect. Nothing was written while it was down.
+- **These numbers depend on the simulator.** The lookup found the record in 42 cells, and a `requestid` replay happened in 8. If real lookups or `requestid` behave differently, the numbers change, which is what the sandbox run is for.
+
+`results/e2e/invoice-path-sim.json` has the same path through the running stack, with the worker container killed mid-write.
+
 ## Run it
 
 Needs Docker. No accounts and no GPU: HubSpot and QuickBooks are simulators, and the model is a scripted stand-in that answers from keyword checks. It isn't a model and no score above came from it.
@@ -53,6 +72,7 @@ docker compose up --build
 
 - Form: http://localhost:4000
 - Triage status: http://localhost:4000/status
+- Invoice approvals: http://localhost:4000/approvals
 - n8n: http://localhost:5678 (asks you to create a local owner on first visit)
 
 Everything binds to `127.0.0.1`, and n8n's telemetry settings are off following n8n's isolation guide. Traffic hasn't been captured to confirm that.
@@ -70,6 +90,7 @@ npm install
 npm test                    # no Docker or model needed
 docker compose up -d postgres
 npm run test:integration    # needs Postgres
+npm run test:restart        # needs Postgres, about 8 minutes
 npm run score -- --split dev --label myrun    # needs a model server, see .env.example
 ```
 
