@@ -23,6 +23,8 @@ export interface ScoredLead {
   needs_review: boolean;
   skip_crm: boolean;
   latency_ms: number | null;
+  /** Times this lead was retried because the model server failed. */
+  retries?: number;
   detail: string | null;
 }
 
@@ -186,8 +188,10 @@ export function renderReport(meta: Record<string, unknown>, metrics: Metrics): s
   lines.push('All leads are synthetic. Labels come from the template authors following `docs/labeling-guide.md`, not from a sales team. These numbers say nothing about how this does on a real inbox.', '');
   lines.push(`- Model: \`${meta.model}\`, prompt \`${meta.prompt_version}\`, rules \`${meta.rules_version}\`, confidence floor ${meta.confidence_min}`);
   lines.push(`- Commit: \`${meta.git_commit}\`${meta.git_dirty ? ' (with uncommitted changes)' : ''}. Ran ${meta.started_at} to ${meta.finished_at}.`);
-  lines.push(`- Leads file SHA-256: \`${meta.leads_sha256}\``, '');
-  lines.push('## Headline', '');
+  lines.push(`- Leads file SHA-256: \`${meta.leads_sha256}\``);
+  if (meta.rerun_reason) lines.push(`- This is a rerun. Reason: ${meta.rerun_reason}`);
+  if (meta.retries_after_server_failure) lines.push(`- Calls retried after the model server failed: ${meta.retries_after_server_failure}`);
+  lines.push('', '## Headline', '');
   lines.push('| Measure | Result |', '|---|---|');
   lines.push(`| Category accuracy, no answer counts as wrong | **${pct(m.category.accuracy)}** (${m.category.correct}/${m.category.n}, 95% CI ${pct(m.category.ci95.low)} to ${pct(m.category.ci95.high)}) |`);
   lines.push(`| Category accuracy when it answered | ${pct(m.category_when_answered.accuracy)} (${m.category_when_answered.correct}/${m.category_when_answered.n}) |`);

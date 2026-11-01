@@ -80,11 +80,33 @@ if (split === 'test') {
   appendFileSync(HELDOUT_LOG, `${JSON.stringify({ at: startedAt, event: 'start', commit, model: llm.model, prompt_version: triageConfig.prompt_version, rerun_reason: args['rerun-reason'] ?? null })}\n`);
 }
 
+// A model server that crashes or restarts says nothing about the model. So a failed call
+// waits and tries again, and a server that stays down stops the run instead of scoring
+// the rest of the set as unanswered. Every retry is counted in the results.
+const RETRY_WAIT_MS = Number(process.env.SCORE_RETRY_WAIT_MS ?? 20_000);
+const MAX_RETRIES_PER_LEAD = 6;
+
 const scored: ScoredLead[] = [];
+let totalRetries = 0;
 for (const [index, lead] of leads.entries()) {
   const rule = sortLead(lead.form, rulesConfig);
   if (args['rules-only'] && !rule) continue;
-  const { decision, classifier } = await runPipeline(lead.form, llm, { rule });
+  let { decision, classifier } = await runPipeline(lead.form, llm, { rule });
+  let retries = 0;
+  while (decision.outcome === 'model_unavailable' && retries < MAX_RETRIES_PER_LEAD) {
+    retries += 1;
+    await new Promise((resolve) => setTimeout(resolve, RETRY_WAIT_MS));
+    ({ decision, classifier } = await runPipeline(lead.form, llm, { rule }));
+  }
+  totalRetries += retries;
+  if (decision.outcome === 'model_unavailable') {
+    const at = new Date().toISOString();
+    console.error(`stopping at lead ${index + 1}/${leads.length}: the model server stayed down (${decision.detail})`);
+    if (split === 'test') {
+      appendFileSync(HELDOUT_LOG, `${JSON.stringify({ at, event: 'aborted', commit, scored: scored.length, reason: decision.detail })}\n`);
+    }
+    process.exit(3);
+  }
   scored.push({
     id: lead.id,
     template_id: lead.generator.template_id,
@@ -103,6 +125,7 @@ for (const [index, lead] of leads.entries()) {
     needs_review: decision.needsReview,
     skip_crm: decision.skipCrm,
     latency_ms: classifier?.latencyMs ?? null,
+    retries,
     detail: decision.detail,
   });
   if ((index + 1) % 20 === 0) console.error(`${index + 1}/${leads.length}`);
@@ -129,11 +152,18 @@ const meta = {
   leads_sha256: sha256(leadsText),
   limit: args.limit ? Number(args.limit) : null,
   rules_only: args['rules-only'],
+  rerun_reason: args['rerun-reason'] ?? null,
+  retries_after_server_failure: totalRetries,
   started_at: startedAt,
   finished_at: finishedAt,
 };
 
-const stem = split === 'test' ? (args['rerun-reason'] ? `test-rerun-${Date.now()}` : 'test-final') : `dev-${label}`;
+function nextRerunStem(): string {
+  let n = 1;
+  while (existsSync(path.join(OUT_DIR, `test-rerun-${n}.json`))) n += 1;
+  return `test-rerun-${n}`;
+}
+const stem = split === 'test' ? (args['rerun-reason'] ? nextRerunStem() : 'test-final') : `dev-${label}`;
 writeFileSync(path.join(OUT_DIR, `${stem}.json`), `${JSON.stringify({ meta, metrics, leads: scored }, null, 2)}\n`);
 writeFileSync(path.join(OUT_DIR, `${stem}.md`), renderReport(meta, metrics));
 if (split === 'test') {
