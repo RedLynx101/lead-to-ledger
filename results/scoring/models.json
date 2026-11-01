@@ -1,0 +1,20 @@
+[
+  {
+    "label": "bonsai",
+    "name": "prism-ml/bonsai-27b",
+    "publisher": "prism-ml",
+    "quantization": "Q1_0",
+    "file_size_bytes": 4734614604,
+    "license": "Apache-2.0, per PrismML's docs",
+    "source": "LM Studio, already on the machine"
+  },
+  {
+    "label": "granite-4.1-8b",
+    "name": "granite-4.1-8b",
+    "publisher": "lmstudio-community build of IBM Granite 4.1 8B",
+    "quantization": "Q4_K_M",
+    "file_size_bytes": 5347914400,
+    "license": "Apache-2.0, per the Hugging Face model card",
+    "source": "https://huggingface.co/lmstudio-community/granite-4.1-8b-GGUF, downloaded through LM Studio's REST API"
+  }
+]
