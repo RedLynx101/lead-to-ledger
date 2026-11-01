@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.git
+node_modules
+HANDOFF.md
+results
+recordings
+tmp

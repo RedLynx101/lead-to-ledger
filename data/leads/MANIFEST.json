@@ -1,0 +1,63 @@
+{
+  "synthetic": true,
+  "note": "Every lead is generated, not collected. Labels come from the template author following docs/labeling-guide.md, not from a sales team. Category shares were chosen to give each category enough examples and say nothing about a real inbox.",
+  "generator_version": 1,
+  "splits": {
+    "dev": {
+      "file": "data/leads/dev.synthetic.jsonl",
+      "seed": 20261101,
+      "count": 160,
+      "template_count": 80,
+      "sha256": "d2a7469bd55625c2457b679753f697d4c946eab2fd7a1ae85ce6ffa1fc4ff087",
+      "templates_sha256": "7c5ab14922d5ab1797eba174141e598146304dfcd55fa7ef0e02d089b2dbf487",
+      "categories": {
+        "existing_customer": 18,
+        "job_seeker": 13,
+        "needs_info": 22,
+        "not_a_fit": 23,
+        "sales_ready": 34,
+        "spam": 26,
+        "vendor_pitch": 24
+      },
+      "priorities": {
+        "high": 18,
+        "low": 90,
+        "normal": 52
+      },
+      "difficulties": {
+        "easy": 38,
+        "hard": 49,
+        "medium": 73
+      },
+      "resubmissions": 5
+    },
+    "test": {
+      "file": "data/leads/test.synthetic.jsonl",
+      "seed": 20261102,
+      "count": 240,
+      "template_count": 100,
+      "sha256": "0f73bba8ee7542d90d6fb3dd48689cc868e8842c24a9cd44e1bbcbc976226fb4",
+      "templates_sha256": "d5505b3885d7c6c255a9ea82fd9962caa0353765452b286373db03aa38b453bf",
+      "categories": {
+        "existing_customer": 28,
+        "job_seeker": 19,
+        "needs_info": 34,
+        "not_a_fit": 34,
+        "sales_ready": 54,
+        "spam": 37,
+        "vendor_pitch": 34
+      },
+      "priorities": {
+        "high": 41,
+        "low": 129,
+        "normal": 70
+      },
+      "difficulties": {
+        "easy": 61,
+        "hard": 76,
+        "medium": 103
+      },
+      "resubmissions": 7
+    }
+  }
+}

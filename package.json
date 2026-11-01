@@ -1,0 +1,22 @@
+{
+  "name": "lead-to-ledger",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A web form lead to a QuickBooks invoice, with an AI step that can only write ai_ fields and a worker that is tested by killing it.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "sim": "node src/simulators/main.ts",
+    "gen:leads": "node scripts/gen-leads.ts",
+    "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "scan:repo": "node scripts/scan-repo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

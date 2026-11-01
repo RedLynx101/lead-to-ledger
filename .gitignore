@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+HANDOFF.md
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+tmp/
+recordings/raw/
