@@ -156,7 +156,7 @@ async function newApprovedJob(suffix = 'a'): Promise<Scenario> {
     company: `Cedar Square ${suffix}`,
     ltl_synthetic: true,
   });
-  const deal = await hubspot.createDeal({ dealname: `Rooftop units ${suffix}`, dealstage: 'closedwon', amount: String(AMOUNT), closedate: '2026-10-30T00:00:00Z' }, contact.id);
+  const deal = await hubspot.createDeal({ dealname: `Rooftop units ${suffix}`, dealstage: 'closedwon', pipeline: 'default', amount: String(AMOUNT), closedate: '2026-10-30T00:00:00Z' }, contact.id);
   await pollWonDeals({ db, hubspot }, { wonStage: 'closedwon', itemName: 'Services' });
   const job = (await db.query<InvoiceJob>('select * from invoice_jobs where deal_id = $1', [deal.id])).rows[0];
   const approved = await approveJob(db, job.id, job.digest, 'Restart test');
@@ -397,7 +397,7 @@ async function concurrencyCell(mode: Mode): Promise<void> {
   // Two more deals for one contact, so workers race for the same customer.
   const shared = await hubspot.upsertContactByEmail('shared@cedarsquare.example.com', { firstname: 'Sam', lastname: 'Shared', company: 'Shared Co' });
   for (const name of ['one', 'two']) {
-    const deal = await hubspot.createDeal({ dealname: `Shared ${name}`, dealstage: 'closedwon', amount: String(AMOUNT), closedate: '2026-10-30T00:00:00Z' }, shared.id);
+    const deal = await hubspot.createDeal({ dealname: `Shared ${name}`, dealstage: 'closedwon', pipeline: 'default', amount: String(AMOUNT), closedate: '2026-10-30T00:00:00Z' }, shared.id);
     await pollWonDeals({ db, hubspot }, { wonStage: 'closedwon', itemName: 'Services' });
     const job = (await db.query<InvoiceJob>('select * from invoice_jobs where deal_id = $1', [deal.id])).rows[0];
     await approveJob(db, job.id, job.digest, 'Restart test');
@@ -577,7 +577,7 @@ const rowsOf = (rows: typeof s.by_group, title: string) => [
 const md = [
   `# Restart tests: ${args.label}`,
   '',
-  'Run against the HubSpot and QuickBooks simulators, not the real APIs. A real worker process is killed, a second one finishes the job, and the simulator counts what exists. Real `requestid` behaviour is unknown until the sandbox run, so each cell runs against all three simulated behaviours.',
+  'Run against the HubSpot and QuickBooks simulators, not the real APIs. A real worker process is killed, a second one finishes the job, and the simulator counts what exists. Each cell runs against all three ways QuickBooks might treat a repeated `requestid`. The real sandbox replayed them for customers and invoices (`results/real/`), which is the `replay` behaviour below.',
   '',
   `- Commit \`${output.meta.git_commit}\`${output.meta.git_dirty ? ' (with uncommitted changes)' : ''}, Node ${output.meta.node} on ${output.meta.platform}, ${output.meta.started_at} to ${output.meta.finished_at}.`,
   `- Lease ${LEASE_SECONDS} s, settling period ${SETTLE_MS} ms, request held ${HOLD_MS} ms, late commit ${LATE_COMMIT_MS} ms.`,

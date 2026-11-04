@@ -211,13 +211,14 @@ describe('QuickBooks simulator', () => {
       assert.ok(res.body.time);
     });
 
-    test('a duplicate DisplayName is Fault 6240, ignoring case', async () => {
-      const first = await api('POST', '/customer', { DisplayName: 'Dup Co' });
+    test('a duplicate DisplayName is Fault 6240, ignoring case, without the existing ID', async () => {
+      await api('POST', '/customer', { DisplayName: 'Dup Co' });
       const second = await api('POST', '/customer', { DisplayName: 'dup co' });
       assert.equal(second.status, 400);
       assert.equal(second.body.Fault.type, 'ValidationFault');
       assert.equal(second.body.Fault.Error[0].code, '6240');
-      assert.match(second.body.Fault.Error[0].Detail, new RegExp(first.body.Customer.Id));
+      // As the sandbox sent it: no ID to parse, so the worker has to look the customer up.
+      assert.equal(second.body.Fault.Error[0].Detail, 'The name supplied already exists. : null');
     });
 
     test('a colon, tab or newline in a name is refused', async () => {

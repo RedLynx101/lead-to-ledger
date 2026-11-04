@@ -1,0 +1,29 @@
+{
+  "status": 400,
+  "body": {
+    "status": "error",
+    "message": "Property values were not valid: [{\"isValid\":false,\"message\":\"Property \\\"ltl_no_such_property\\\" does not exist\",\"error\":\"PROPERTY_DOESNT_EXIST\",\"name\":\"ltl_no_such_property\",\"details\":[]}]",
+    "correlationId": "01a1a3e2-82cd-7dac-9e09-357134907adf",
+    "errors": [
+      {
+        "message": "Property \"ltl_no_such_property\" does not exist",
+        "code": "PROPERTY_DOESNT_EXIST",
+        "context": {
+          "propertyName": [
+            "ltl_no_such_property"
+          ]
+        }
+      }
+    ],
+    "category": "VALIDATION_ERROR"
+  },
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249950",
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "96",
+    "x-hubspot-ratelimit-secondly": "10",
+    "x-hubspot-ratelimit-secondly-remaining": "9"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "status": 400,
+  "body": {
+    "Fault": {
+      "Error": [
+        {
+          "Message": "Duplicate Name Exists Error",
+          "Detail": "The name supplied already exists. : null",
+          "code": "6240"
+        }
+      ],
+      "type": "ValidationFault"
+    },
+    "time": "2026-11-03T17:12:03.168-07:00"
+  }
+}

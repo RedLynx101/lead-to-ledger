@@ -1,0 +1,23 @@
+{
+  "status": 201,
+  "body": {
+    "id": "10001",
+    "properties": {
+      "hs_object_id": "10001",
+      "createdate": "2026-11-04T00:12:01.087Z",
+      "email": "probe.mw1d3ago@lead-to-ledger.example.com",
+      "firstname": "Probe",
+      "lastname": "mw1d3ago",
+      "ltl_synthetic": "true",
+      "lastmodifieddate": "2026-11-04T00:12:01.088Z"
+    },
+    "createdAt": "2026-11-04T00:12:01.087Z",
+    "updatedAt": "2026-11-04T00:12:01.088Z",
+    "archived": false
+  },
+  "headers": {
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "84"
+  }
+}

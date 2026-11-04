@@ -43,12 +43,14 @@ services:
       postgres: { condition: service_healthy }
       simulators: { condition: service_healthy }
     environment:
-      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/ltl
+      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/${LTL_DB_NAME:-ltl}
       LTL_INTERNAL_TOKEN: ${LTL_INTERNAL_TOKEN:-local-only}
       LTL_AUTO_SETUP: ${LTL_AUTO_SETUP:-true}
       HUBSPOT_BASE_URL: ${APP_HUBSPOT_BASE_URL:-http://simulators:4010}
       HUBSPOT_TOKEN: ${APP_HUBSPOT_TOKEN:-sim-hubspot-token}
       HUBSPOT_API_VERSION: ${HUBSPOT_API_VERSION:-2026-09}
+      # sim unless scripts/real-run.ts says otherwise. Real credentials are ignored in sim.
+      LTL_TARGET: ${LTL_TARGET:-sim}
       LLM_BASE_URL: ${APP_LLM_BASE_URL:-http://simulators:4030/v1}
       LLM_MODEL: ${APP_LLM_MODEL:-scripted-stand-in}
       LLM_API_KEY: ${APP_LLM_API_KEY:-lm-studio}
@@ -70,10 +72,15 @@ services:
       postgres: { condition: service_healthy }
       simulators: { condition: service_healthy }
     environment:
-      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/ltl
+      LTL_DATABASE_URL: postgres://ltl:${LTL_PG_PASSWORD:-ltl_local_only}@postgres:5432/${LTL_DB_NAME:-ltl}
       HUBSPOT_BASE_URL: ${APP_HUBSPOT_BASE_URL:-http://simulators:4010}
       HUBSPOT_API_VERSION: ${HUBSPOT_API_VERSION:-2026-09}
       QB_API_BASE_URL: ${APP_QB_API_BASE_URL:-http://simulators:4020}
+      LTL_TARGET: ${LTL_TARGET:-sim}
+      HUBSPOT_TOKEN: ${APP_HUBSPOT_TOKEN:-sim-hubspot-token}
+      INTUIT_ENVIRONMENT: ${INTUIT_ENVIRONMENT:-sandbox}
+      INTUIT_CLIENT_ID: ${INTUIT_CLIENT_ID:-}
+      INTUIT_CLIENT_SECRET: ${INTUIT_CLIENT_SECRET:-}
       LTL_AUTO_CONNECT_SIM: ${LTL_AUTO_CONNECT_SIM:-true}
       LTL_POLL_MS: ${LTL_POLL_MS:-5000}
       LTL_SETTLE_MS: ${LTL_SETTLE_MS:-5000}

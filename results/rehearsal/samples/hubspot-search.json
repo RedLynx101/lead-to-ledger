@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "body": {
+    "total": 1,
+    "results": [
+      {
+        "id": "10001",
+        "properties": {
+          "createdate": "2026-11-04T00:12:01.087Z",
+          "email": "probe.mw1d3ago@lead-to-ledger.example.com",
+          "firstname": "Probe",
+          "hs_object_id": "10001",
+          "lastmodifieddate": "2026-11-04T00:12:01.088Z",
+          "lastname": "mw1d3ago"
+        },
+        "createdAt": "2026-11-04T00:12:01.087Z",
+        "updatedAt": "2026-11-04T00:12:01.088Z",
+        "archived": false
+      }
+    ]
+  },
+  "headers": {}
+}

@@ -1,0 +1,9 @@
+{
+  "status": 404,
+  "body": null,
+  "headers": {
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "81"
+  }
+}

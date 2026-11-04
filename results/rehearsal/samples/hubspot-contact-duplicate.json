@@ -1,0 +1,14 @@
+{
+  "status": 409,
+  "body": {
+    "status": "error",
+    "message": "Contact already exists. Existing ID: 10001",
+    "correlationId": "3465c79b-aafe-4013-858a-fa74061cea03",
+    "category": "CONFLICT"
+  },
+  "headers": {
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "83"
+  }
+}

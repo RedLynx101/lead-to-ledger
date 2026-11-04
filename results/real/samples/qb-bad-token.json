@@ -1,0 +1,27 @@
+{
+  "status": 401,
+  "body": {
+    "warnings": null,
+    "intuitObject": null,
+    "fault": {
+      "error": [
+        {
+          "message": "message=AuthenticationFailed; errorCode=003200; statusCode=401",
+          "detail": "Malformed bearer token: too short or too long",
+          "code": "3200",
+          "element": null
+        }
+      ],
+      "type": "AUTHENTICATION"
+    },
+    "report": null,
+    "queryResponse": null,
+    "batchItemResponse": [],
+    "attachableResponse": [],
+    "syncErrorResponse": null,
+    "requestId": null,
+    "time": 1793750898880,
+    "status": null,
+    "cdcresponse": []
+  }
+}

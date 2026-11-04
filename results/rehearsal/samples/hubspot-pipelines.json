@@ -1,0 +1,90 @@
+{
+  "status": 200,
+  "body": {
+    "results": [
+      {
+        "id": "default",
+        "label": "Sales Pipeline",
+        "displayOrder": 0,
+        "archived": false,
+        "stages": [
+          {
+            "id": "appointmentscheduled",
+            "label": "Appointment Scheduled",
+            "displayOrder": 0,
+            "archived": false,
+            "metadata": {
+              "isClosed": "false",
+              "probability": "0.2"
+            }
+          },
+          {
+            "id": "qualifiedtobuy",
+            "label": "Qualified To Buy",
+            "displayOrder": 1,
+            "archived": false,
+            "metadata": {
+              "isClosed": "false",
+              "probability": "0.4"
+            }
+          },
+          {
+            "id": "presentationscheduled",
+            "label": "Presentation Scheduled",
+            "displayOrder": 2,
+            "archived": false,
+            "metadata": {
+              "isClosed": "false",
+              "probability": "0.6"
+            }
+          },
+          {
+            "id": "decisionmakerboughtin",
+            "label": "Decision Maker Bought-In",
+            "displayOrder": 3,
+            "archived": false,
+            "metadata": {
+              "isClosed": "false",
+              "probability": "0.8"
+            }
+          },
+          {
+            "id": "contractsent",
+            "label": "Contract Sent",
+            "displayOrder": 4,
+            "archived": false,
+            "metadata": {
+              "isClosed": "false",
+              "probability": "0.9"
+            }
+          },
+          {
+            "id": "closedwon",
+            "label": "Closed Won",
+            "displayOrder": 5,
+            "archived": false,
+            "metadata": {
+              "isClosed": "true",
+              "probability": "1.0"
+            }
+          },
+          {
+            "id": "closedlost",
+            "label": "Closed Lost",
+            "displayOrder": 6,
+            "archived": false,
+            "metadata": {
+              "isClosed": "true",
+              "probability": "0.0"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "headers": {
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "86"
+  }
+}

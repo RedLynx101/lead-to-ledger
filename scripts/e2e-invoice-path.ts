@@ -75,7 +75,7 @@ async function approveThroughPage(job: InvoiceJob, name: string): Promise<{ stat
 
 async function newDeal(name: string, amount: string, stage = 'closedwon') {
   const contact = await hubspot.upsertContactByEmail(`${name}@cedarsquare.example.com`, { firstname: 'Pat', lastname: name, company: `Cedar Square ${name}`, ltl_synthetic: true });
-  const deal = await hubspot.createDeal({ dealname: `Rooftop units, ${name}`, dealstage: stage, amount, closedate: '2026-10-30T00:00:00Z' }, contact.id);
+  const deal = await hubspot.createDeal({ dealname: `Rooftop units, ${name}`, dealstage: stage, pipeline: 'default', amount, closedate: '2026-10-30T00:00:00Z' }, contact.id);
   return { contact, deal };
 }
 

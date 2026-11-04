@@ -1,0 +1,16 @@
+{
+  "status": 401,
+  "body": {
+    "fault": {
+      "error": [
+        {
+          "message": "message=AuthenticationFailed; errorCode=003200; statusCode=401",
+          "detail": "Token invalid",
+          "code": "3200"
+        }
+      ],
+      "type": "AUTHENTICATION"
+    },
+    "time": "2026-11-03T17:12:03.188-07:00"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": 404,
+  "body": null,
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249949",
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "95",
+    "x-hubspot-ratelimit-secondly": "10",
+    "x-hubspot-ratelimit-secondly-remaining": "9"
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "target": "HubSpot test account and QuickBooks sandbox",
+  "synthetic": true,
+  "model": "scripted stand-in",
+  "git_commit": "d511075",
+  "git_dirty": true,
+  "started_at": "2026-11-04T00:07:37.592Z",
+  "finished_at": "2026-11-04T00:09:51.981Z",
+  "checks_total": 29,
+  "checks_failed": 0,
+  "facts": {
+    "hubspot_property_setup": {
+      "group:ai_triage": "exists",
+      "ai_category": "exists",
+      "ai_priority": "exists",
+      "ai_summary": "exists",
+      "ai_confidence": "exists",
+      "ai_needs_review": "exists",
+      "ai_source": "exists",
+      "ai_model": "exists",
+      "ltl_synthetic": "exists",
+      "group:ltl_ledger": "exists",
+      "ltl_qb_invoice_id": "exists",
+      "ltl_qb_doc_number": "exists"
+    },
+    "hubspot_won_stage_present": true,
+    "hubspot_won_pipeline": "default",
+    "hubspot_deal_without_pipeline": {
+      "status": 400,
+      "category": "VALIDATION_ERROR"
+    },
+    "hubspot_duplicate_email": {
+      "status": 409,
+      "category": "CONFLICT"
+    },
+    "hubspot_unknown_property": {
+      "status": 400,
+      "category": "VALIDATION_ERROR"
+    },
+    "hubspot_not_found": {
+      "status": 404,
+      "category": null
+    },
+    "hubspot_bad_token": {
+      "status": 401,
+      "category": "INVALID_AUTHENTICATION"
+    },
+    "hubspot_rate_limit_headers": [
+      "x-hubspot-ratelimit-daily",
+      "x-hubspot-ratelimit-daily-remaining",
+      "x-hubspot-ratelimit-interval-milliseconds",
+      "x-hubspot-ratelimit-max",
+      "x-hubspot-ratelimit-remaining",
+      "x-hubspot-ratelimit-secondly",
+      "x-hubspot-ratelimit-secondly-remaining"
+    ],
+    "hubspot_read_by_email_right_after_create": true,
+    "hubspot_search_lag_ms_upper_bound": 227,
+    "qb_custom_txn_numbers": false,
+    "qb_requestid_customer": "replay",
+    "qb_requestid_customer_new_body": "replayed the first response",
+    "qb_duplicate_display_name": {
+      "status": 400,
+      "code": "6240"
+    },
+    "qb_query_sees_new_invoice_within_ms": 351,
+    "qb_doc_number_kept": true,
+    "qb_requestid_invoice": "replay",
+    "qb_duplicate_doc_number": "allowed",
+    "qb_bad_query": {
+      "status": 400,
+      "code": "4000"
+    },
+    "qb_bad_token": {
+      "status": 401,
+      "code": "3200"
+    },
+    "kill_drills": [
+      {
+        "at": "after:qb.create_invoice",
+        "invoices": 1,
+        "status": "done",
+        "foundByLookup": true
+      },
+      {
+        "at": "before:qb.create_invoice",
+        "invoices": 1,
+        "status": "done",
+        "foundByLookup": false
+      },
+      {
+        "at": "after:qb.create_customer",
+        "invoices": 1,
+        "status": "done",
+        "foundByLookup": true
+      }
+    ],
+    "qb_duplicates_found_by_reconcile": 0
+  },
+  "checks": [
+    {
+      "step": "preflight",
+      "name": ".env has HUBSPOT_TOKEN, INTUIT_CLIENT_ID, INTUIT_CLIENT_SECRET, LTL_TOKEN_KEY",
+      "pass": true,
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "step": "preflight",
+      "name": "INTUIT_ENVIRONMENT is sandbox",
+      "pass": true
+    },
+    {
+      "step": "preflight",
+      "name": "QuickBooks is connected",
+      "pass": true,
+      "detail": "run npm run connect:quickbooks first"
+    },
+    {
+      "step": "preflight",
+      "name": "a QuickBooks test read works",
+      "pass": true
+    },
+    {
+      "step": "preflight",
+      "name": "the HubSpot key can read contact properties",
+      "pass": true,
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "step": "hubspot",
+      "name": "the ai_ and ltl_ properties exist",
+      "pass": true
+    },
+    {
+      "step": "hubspot",
+      "name": "deal pipelines are readable",
+      "pass": true,
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "step": "hubspot",
+      "name": "a contact can be created",
+      "pass": true,
+      "detail": {
+        "status": 201
+      }
+    },
+    {
+      "step": "quickbooks",
+      "name": "the item \"Services\" exists",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "shadow: every lead was triaged through n8n",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "shadow: lead0.mw1cy2jj reached the CRM with no ai_ fields",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "shadow: lead1.mw1cy2jj reached the CRM with no ai_ fields",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "shadow: lead2.mw1cy2jj reached the CRM with no ai_ fields",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "live: every lead was triaged through n8n",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "live: lead3.mw1cy2jj holds exactly the stored ai_ values",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "live: lead4.mw1cy2jj holds exactly the stored ai_ values",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "live: lead5.mw1cy2jj holds exactly the stored ai_ values",
+      "pass": true
+    },
+    {
+      "step": "lead path",
+      "name": "a replayed webhook changed no ai_ field",
+      "pass": true
+    },
+    {
+      "step": "invoice path",
+      "name": "the worker polled the won deal into a job",
+      "pass": true,
+      "detail": "awaiting_approval"
+    },
+    {
+      "step": "invoice path",
+      "name": "approval through the page",
+      "pass": true
+    },
+    {
+      "step": "invoice path",
+      "name": "the job finished",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "step": "invoice path",
+      "name": "one invoice in QuickBooks",
+      "pass": true
+    },
+    {
+      "step": "invoice path",
+      "name": "the invoice is noted on the deal",
+      "pass": true
+    },
+    {
+      "step": "kill drills",
+      "name": "after:qb.create_invoice: the worker died at that point",
+      "pass": true
+    },
+    {
+      "step": "kill drills",
+      "name": "after:qb.create_invoice: one invoice after a restart",
+      "pass": true,
+      "detail": {
+        "invoices": 1,
+        "status": "done",
+        "problem": null
+      }
+    },
+    {
+      "step": "kill drills",
+      "name": "before:qb.create_invoice: the worker died at that point",
+      "pass": true
+    },
+    {
+      "step": "kill drills",
+      "name": "before:qb.create_invoice: one invoice after a restart",
+      "pass": true,
+      "detail": {
+        "invoices": 1,
+        "status": "done",
+        "problem": null
+      }
+    },
+    {
+      "step": "kill drills",
+      "name": "after:qb.create_customer: the worker died at that point",
+      "pass": true
+    },
+    {
+      "step": "kill drills",
+      "name": "after:qb.create_customer: one invoice after a restart",
+      "pass": true,
+      "detail": {
+        "invoices": 1,
+        "status": "done",
+        "problem": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "status": 400,
+  "body": {
+    "Fault": {
+      "Error": [
+        {
+          "Message": "Error parsing query",
+          "Detail": "QueryParserError: Projections are not supported",
+          "code": "4000"
+        }
+      ],
+      "type": "ValidationFault"
+    },
+    "time": "2026-11-03T17:12:03.185-07:00"
+  }
+}

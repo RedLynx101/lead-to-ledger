@@ -6,7 +6,9 @@
 //   node scripts/connect-quickbooks.ts --from-env   uses INTUIT_REFRESH_TOKEN and INTUIT_REALM_ID
 //                                                   from .env, if localhost isn't accepted and
 //                                                   you got them from Intuit's OAuth Playground
-//   node scripts/connect-quickbooks.ts --sim        connects to the local simulator instead
+//   node scripts/connect-quickbooks.ts --sim        connects to the local simulator instead.
+//                                                   With --print-url or --from-env, it goes
+//                                                   through the same steps as the real flow.
 
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
@@ -124,7 +126,8 @@ function waitForCallback(state: string): Promise<{ code: string; realmId: string
 }
 
 try {
-  if (args.sim) {
+  if (args.sim && !args['print-url'] && !args['from-env']) {
+    // The simulator consents by itself, so no browser is needed.
     await connectSimulator(settings, store);
     await checkConnection();
   } else if (args['from-env']) {

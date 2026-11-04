@@ -1,0 +1,170 @@
+{
+  "synthetic": true,
+  "model": "granite-4.1-8b",
+  "captured_at": "2026-11-03T23:49:18.424Z",
+  "killed_at": null,
+  "drill": {
+    "doc_number": "LTL-10013",
+    "invoices_after_kill": 1,
+    "invoices_after_restart": 1,
+    "events": [
+      {
+        "at": "2026-11-03T23:47:08.356Z",
+        "event": "created",
+        "detail": {
+          "digest": "5f795a4339f19e92808e66487c1711bc88f1d7b9926608b3fd9b57c067fbee0c"
+        }
+      },
+      {
+        "at": "2026-11-03T23:47:14.605Z",
+        "event": "approved",
+        "detail": {
+          "by": "Demo reviewer",
+          "digest": "5f795a4339f19e92808e66487c1711bc88f1d7b9926608b3fd9b57c067fbee0c"
+        }
+      },
+      {
+        "at": "2026-11-03T23:47:16.444Z",
+        "event": "claimed",
+        "detail": {
+          "attempt": 1,
+          "after_dead_worker": false
+        }
+      },
+      {
+        "at": "2026-11-03T23:47:16.463Z",
+        "event": "created",
+        "detail": {
+          "id": "5",
+          "call": "qb.create_customer"
+        }
+      },
+      {
+        "at": "2026-11-03T23:49:17.578Z",
+        "event": "claimed",
+        "detail": {
+          "attempt": 2,
+          "after_dead_worker": true
+        }
+      },
+      {
+        "at": "2026-11-03T23:49:17.589Z",
+        "event": "unknown_outcome_resolving",
+        "detail": {
+          "call": "qb.create_invoice",
+          "attempts": 1
+        }
+      },
+      {
+        "at": "2026-11-03T23:49:17.595Z",
+        "event": "found_existing",
+        "detail": {
+          "id": "6",
+          "call": "qb.create_invoice"
+        }
+      },
+      {
+        "at": "2026-11-03T23:49:17.604Z",
+        "event": "done",
+        "detail": null
+      }
+    ],
+    "deal_note": {
+      "ltl_qb_invoice_id": "6",
+      "ltl_qb_doc_number": "LTL-10013"
+    }
+  },
+  "triage": [
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "sales_ready",
+      "priority": "high",
+      "wrote_to_crm": false,
+      "mode": "shadow"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "sales_ready",
+      "priority": "high",
+      "wrote_to_crm": false,
+      "mode": "shadow"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "vendor_pitch",
+      "priority": "low",
+      "wrote_to_crm": false,
+      "mode": "shadow"
+    },
+    {
+      "route": "rule",
+      "rule_id": "honeypot",
+      "outcome": "rule",
+      "category": "spam",
+      "priority": "low",
+      "wrote_to_crm": false,
+      "mode": "shadow"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "sales_ready",
+      "priority": "normal",
+      "wrote_to_crm": false,
+      "mode": "shadow"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "sales_ready",
+      "priority": "high",
+      "wrote_to_crm": true,
+      "mode": "live"
+    },
+    {
+      "route": "rule",
+      "rule_id": "customer_number",
+      "outcome": "rule",
+      "category": "existing_customer",
+      "priority": "high",
+      "wrote_to_crm": true,
+      "mode": "live"
+    },
+    {
+      "route": "rule",
+      "rule_id": "city_out_of_area",
+      "outcome": "rule",
+      "category": "not_a_fit",
+      "priority": "low",
+      "wrote_to_crm": true,
+      "mode": "live"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "vendor_pitch",
+      "priority": "low",
+      "wrote_to_crm": true,
+      "mode": "live"
+    },
+    {
+      "route": "model",
+      "rule_id": null,
+      "outcome": "ok",
+      "category": "job_seeker",
+      "priority": "low",
+      "wrote_to_crm": true,
+      "mode": "live"
+    }
+  ],
+  "killed_at_note": "Not recorded in this run: the kill came right after the held invoice write began, after 23:47:16.463Z."
+}

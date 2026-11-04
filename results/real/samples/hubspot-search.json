@@ -1,0 +1,27 @@
+{
+  "status": 200,
+  "body": {
+    "total": 1,
+    "results": [
+      {
+        "id": "584337477361",
+        "properties": {
+          "createdate": "2026-11-04T00:08:12.488Z",
+          "email": "probe.mw1cy2jj@lead-to-ledger.example.com",
+          "firstname": "Probe",
+          "hs_object_id": "584337477361",
+          "lastmodifieddate": "2026-11-04T00:08:12.488Z",
+          "lastname": "mw1cy2jj"
+        },
+        "createdAt": "2026-11-04T00:08:12.488Z",
+        "updatedAt": "2026-11-04T00:08:12.488Z",
+        "archived": false,
+        "url": "<hubspot app link removed>"
+      }
+    ]
+  },
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249947"
+  }
+}

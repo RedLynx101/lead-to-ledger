@@ -1,0 +1,38 @@
+{
+  "about": "What the real run on 2026-11-04 (UTC) showed against what the simulators assumed. One run against a HubSpot developer test account and one QuickBooks sandbox company, with synthetic data. Each real result is a single observation. Sources: summary.json and samples/ in this folder, and the first attempt's error, which summary.json records as hubspot_deal_without_pipeline.",
+  "verdicts": {
+    "matched": "the simulator already behaved this way",
+    "fixed": "the simulator was wrong and now matches the real response",
+    "harsher": "the simulator is stricter or slower than what was seen, kept on purpose",
+    "left": "differs, but nothing in the code reads it, so the simulator was left alone"
+  },
+  "quickbooks": [
+    { "behaviour": "Same requestid twice on a customer", "real": "replayed the first response: same Id", "simulator": "replay (default)", "verdict": "matched" },
+    { "behaviour": "Same requestid, changed customer body", "real": "replayed the first response; the change was ignored", "simulator": "replay", "verdict": "matched" },
+    { "behaviour": "Same requestid twice on an invoice", "real": "replayed the first response: same Id", "simulator": "replay (default)", "verdict": "matched" },
+    { "behaviour": "Same DocNumber with a new requestid", "real": "allowed: a second invoice with the same number", "simulator": "allowed (default)", "verdict": "matched" },
+    { "behaviour": "Supplied DocNumber with CustomTxnNumbers off", "real": "kept", "simulator": "kept", "verdict": "matched" },
+    { "behaviour": "Duplicate customer DisplayName", "real": "400, Fault 6240, detail \"The name supplied already exists. : null\"", "simulator": "6240 with the existing ID in the detail, as the docs show", "verdict": "fixed" },
+    { "behaviour": "A query sees a new invoice", "real": "within 351 ms, counting the query's own round trip", "simulator": "at once (default)", "verdict": "matched" },
+    { "behaviour": "Query with no match", "real": "200 with an empty QueryResponse", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Malformed query", "real": "400, Fault 4000", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Bad access token", "real": "401, lowercase fault.error, code 3200", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Invoice due date", "real": "30 days after the transaction date", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Sandbox has an item named Services", "real": "yes", "simulator": "yes", "verdict": "matched" }
+  ],
+  "hubspot": [
+    { "behaviour": "Create a deal with no pipeline", "real": "400 VALIDATION_ERROR: \"The following required properties were missing: [pipeline]\"", "simulator": "accepted it and filled in the default pipeline", "verdict": "fixed" },
+    { "behaviour": "GET a contact that doesn't exist", "real": "404 with an empty body", "simulator": "404 with a JSON body, category OBJECT_NOT_FOUND", "verdict": "fixed" },
+    { "behaviour": "Unknown property in a write", "real": "400 VALIDATION_ERROR, PROPERTY_DOESNT_EXIST, an errors array, detail entries with details: []", "simulator": "the same, but detail entries had localizedErrorMessage instead of details", "verdict": "fixed" },
+    { "behaviour": "Duplicate contact email", "real": "409 CONFLICT, \"Contact already exists. Existing ID: N\"", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Bad token", "real": "401 INVALID_AUTHENTICATION", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Creating a property or group that exists", "real": "409, read as exists", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Read by email right after create", "real": "found", "simulator": "found", "verdict": "matched" },
+    { "behaviour": "Search sees a new contact", "real": "within 227 ms, one check", "simulator": "after 1,500 ms (default)", "verdict": "harsher" },
+    { "behaviour": "Default contact properties on search", "real": "createdate, email, firstname, hs_object_id, lastmodifieddate, lastname", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Rate limit headers", "real": "general calls: daily, interval, max, remaining and secondly headers; search: the two daily headers only", "simulator": "general calls: interval, max and remaining; search: none", "verdict": "left" },
+    { "behaviour": "Record responses", "real": "id, properties, createdAt, updatedAt, archived, plus a url into HubSpot's app that contains the portal ID", "simulator": "the same without url", "verdict": "left" },
+    { "behaviour": "Dated paths (/crm/objects/2026-09/...)", "real": "worked for every call made", "simulator": "the same", "verdict": "matched" },
+    { "behaviour": "Deal pipeline and won stage", "real": "pipeline default holds closedwon", "simulator": "the same", "verdict": "matched" }
+  ]
+}

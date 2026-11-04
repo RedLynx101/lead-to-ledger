@@ -1,0 +1,18 @@
+{
+  "status": 409,
+  "body": {
+    "status": "error",
+    "message": "Contact already exists. Existing ID: 584337477361",
+    "correlationId": "01a1a3e2-819a-79a8-916f-d6f6327aa58f",
+    "category": "CONFLICT"
+  },
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249951",
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "97",
+    "x-hubspot-ratelimit-secondly": "10",
+    "x-hubspot-ratelimit-secondly-remaining": "9"
+  }
+}

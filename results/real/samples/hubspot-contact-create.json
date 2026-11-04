@@ -1,0 +1,50 @@
+{
+  "status": 201,
+  "body": {
+    "id": "584337477361",
+    "properties": {
+      "createdate": "2026-11-04T00:08:12.488Z",
+      "email": "probe.mw1cy2jj@lead-to-ledger.example.com",
+      "firstname": "Probe",
+      "hs_all_contact_vids": "584337477361",
+      "hs_associated_target_accounts": "0",
+      "hs_currently_enrolled_in_prospecting_agent": "false",
+      "hs_email_domain": "lead-to-ledger.example.com",
+      "hs_full_name_or_email": "Probe mw1cy2jj",
+      "hs_is_contact": "true",
+      "hs_is_unworked": "true",
+      "hs_membership_has_accessed_private_content": "0",
+      "hs_num_active_contracts": "0",
+      "hs_num_associated_open_deals": "0",
+      "hs_object_id": "584337477361",
+      "hs_object_source": "INTEGRATION",
+      "hs_object_source_id": "60099007",
+      "hs_object_source_label": "INTEGRATION",
+      "hs_pipeline": "contacts-lifecycle-pipeline",
+      "hs_prospecting_agent_actively_enrolled_count": "0",
+      "hs_prospecting_agent_total_enrolled_count": "0",
+      "hs_registered_member": "0",
+      "hs_sequences_actively_enrolled_count": "0",
+      "hs_v2_date_entered_current_stage": "2026-11-04T00:08:12.488Z",
+      "hs_v2_time_in_current_stage": "2026-11-04T00:08:12.488Z",
+      "lastmodifieddate": "2026-11-04T00:08:12.488Z",
+      "lastname": "mw1cy2jj",
+      "lifecyclestage": "lead",
+      "ltl_synthetic": "true",
+      "num_notes": "0"
+    },
+    "createdAt": "2026-11-04T00:08:12.488Z",
+    "updatedAt": "2026-11-04T00:08:12.488Z",
+    "archived": false,
+    "url": "<hubspot app link removed>"
+  },
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249952",
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "98",
+    "x-hubspot-ratelimit-secondly": "10",
+    "x-hubspot-ratelimit-secondly-remaining": "9"
+  }
+}

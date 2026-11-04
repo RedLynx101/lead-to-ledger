@@ -1,0 +1,79 @@
+{
+  "status": 200,
+  "body": {
+    "Invoice": {
+      "AllowIPNPayment": false,
+      "AllowOnlinePayment": true,
+      "AllowOnlineCreditCardPayment": true,
+      "AllowOnlineACHPayment": true,
+      "AllowOnlinePayPalPayment": false,
+      "AllowOnlineAffirmPayment": false,
+      "domain": "QBO",
+      "sparse": false,
+      "Id": "148",
+      "SyncToken": "0",
+      "MetaData": {
+        "CreateTime": "2026-11-03T16:08:18-08:00",
+        "LastModifiedByRef": {
+          "value": "9341458607452483"
+        },
+        "LastUpdatedTime": "2026-11-03T16:08:18-08:00"
+      },
+      "CustomField": [],
+      "DocNumber": "LTLP-mw1cy2jj",
+      "TxnDate": "2026-11-03",
+      "CurrencyRef": {
+        "value": "USD",
+        "name": "United States Dollar"
+      },
+      "PrivateNote": "Probe. Synthetic test data.",
+      "LinkedTxn": [],
+      "Line": [
+        {
+          "Id": "1",
+          "LineNum": 1,
+          "Amount": 10,
+          "DetailType": "SalesItemLineDetail",
+          "SalesItemLineDetail": {
+            "ItemRef": {
+              "value": "1",
+              "name": "Services"
+            },
+            "ItemAccountRef": {
+              "value": "1",
+              "name": "Services"
+            },
+            "TaxCodeRef": {
+              "value": "NON"
+            }
+          },
+          "CustomExtensions": []
+        },
+        {
+          "Amount": 10,
+          "DetailType": "SubTotalLineDetail",
+          "SubTotalLineDetail": {}
+        }
+      ],
+      "TxnTaxDetail": {
+        "TotalTax": 0
+      },
+      "CustomerRef": {
+        "value": "59",
+        "name": "Probe mw1cy2jj [probe]"
+      },
+      "ShipFromAddr": {
+        "Id": "99",
+        "Line1": "123 Sierra Way",
+        "Line2": "San Pablo, CA  87999"
+      },
+      "DueDate": "2026-12-03",
+      "TotalAmt": 10,
+      "ApplyTaxAfterDiscount": false,
+      "PrintStatus": "NeedToPrint",
+      "EmailStatus": "NotSet",
+      "Balance": 10
+    },
+    "time": "2026-11-03T16:08:17.791-08:00"
+  }
+}

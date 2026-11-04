@@ -30,7 +30,9 @@ HubSpot stopped allowing new legacy private apps on 2026-10-26. A service key is
    HUBSPOT_TOKEN=<the key>
    ```
 
-**If a test account has no Service keys page:** HubSpot's docs don't say whether test accounts offer them, so this is unconfirmed until someone looks. There are two ways on, neither of them paid:
+**Confirmed on 2026-11-03:** a service key created in a developer test account worked for every call the real run makes.
+
+**If a test account has no Service keys page** anyway, there are two ways on, neither of them paid:
 
 - **Simplest:** create the service key in the main HubSpot account, the same way, if that account holds no real customer data. Everything this repo writes there is synthetic, marked `ltl_synthetic`, on reserved email domains.
 - **Keeps the data in the test account:** a private app with a static token. Run `npm install -g @hubspot/cli@latest`, `hs account auth`, then `hs project create`, choosing **App**, private distribution and a static token. In `src/app/app-hsmeta.json`, set `requiredScopes` to the eight scopes above, then run `hs project upload`. In **Development > Projects**, open the project, click the app, open the **Distribution** tab, click **Add test install(s)**, and install it in the test account. The docs say only that the token is "in your app settings", so look for it on the app's **Auth** tab.
@@ -73,6 +75,18 @@ HubSpot stopped allowing new legacy private apps on 2026-10-26. A service key is
 
 5. Delete those two lines from `.env`. The refresh token has moved into Postgres, encrypted.
 
-## What the real run saves
+## The run
 
-Real responses go under `results/real/` with tokens, realm IDs and portal IDs stripped. `docs/simulator-sources.md` then gets its "Real check" column filled in, including whether `requestid` stops a duplicate on each record type.
+With both connected:
+
+```
+npm run real-run
+```
+
+It checks the keys and the QuickBooks connection, printing only pass or fail, starts the stack against the real services, probes the behaviour the simulators had to assume, runs six leads through n8n in shadow and then live, runs a won deal through approval to an invoice, and kills a worker at three points around the QuickBooks writes. Everything it creates is synthetic and marked, and it deletes nothing. The saved run took 2 minutes 14 seconds from starting the stack to writing the results, then brought the stack down.
+
+Real responses go under `results/real/`, with tokens, the realm ID and the HubSpot portal ID removed, including from the `url` HubSpot puts on each record. `results/real/simulator-check.json` compares each one with what the simulators assumed, and `docs/simulator-sources.md` has the same in its "Real check" column.
+
+## What happened on 2026-11-03
+
+The consent click went through `npm run connect:quickbooks -- --print-url`, with the localhost redirect. The first attempt at the run stopped when HubSpot refused a deal with no `pipeline`, which the simulator had accepted. The simulator and every caller were fixed, and the second attempt passed all 29 checks. `results/real/summary.md` has the results.

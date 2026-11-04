@@ -1,0 +1,35 @@
+{
+  "status": 200,
+  "body": {
+    "Customer": {
+      "Taxable": true,
+      "Notes": "Synthetic test data.",
+      "Job": false,
+      "BillWithParent": false,
+      "Balance": 0,
+      "BalanceWithJobs": 0,
+      "CurrencyRef": {
+        "value": "USD",
+        "name": "United States Dollar"
+      },
+      "PreferredDeliveryMethod": "Print",
+      "IsProject": false,
+      "domain": "QBO",
+      "sparse": false,
+      "Id": "59",
+      "SyncToken": "0",
+      "MetaData": {
+        "CreateTime": "2026-11-03T16:08:15-08:00",
+        "LastUpdatedTime": "2026-11-03T16:08:15-08:00"
+      },
+      "FullyQualifiedName": "Probe mw1cy2jj [probe]",
+      "DisplayName": "Probe mw1cy2jj [probe]",
+      "PrintOnCheckName": "Probe mw1cy2jj [probe]",
+      "Active": true,
+      "DefaultTaxCodeRef": {
+        "value": "2"
+      }
+    },
+    "time": "2026-11-03T16:08:15.169-08:00"
+  }
+}

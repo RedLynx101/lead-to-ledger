@@ -483,7 +483,8 @@ export function createQuickBooksSim(overrides: Partial<QuickBooksConfig> = {}): 
     }
     const clash = [...customers.values()].find((c) => String(c.DisplayName).toLowerCase() === displayName.toLowerCase());
     if (clash) {
-      return validationFault('6240', 'Duplicate Name Exists Error', `The name supplied already exists. The customer ID is: ${clash.Id}`);
+      // The sandbox sent this exact detail on 2026-11-03. The docs show the existing ID; the sandbox didn't.
+      return validationFault('6240', 'Duplicate Name Exists Error', 'The name supplied already exists. : null');
     }
     const customer = makeEntity({
       ...body,

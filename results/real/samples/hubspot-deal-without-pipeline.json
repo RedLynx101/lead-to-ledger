@@ -1,0 +1,18 @@
+{
+  "status": 400,
+  "body": {
+    "status": "error",
+    "message": "Cannot create object with type: DEAL. The following required properties were missing: [pipeline]",
+    "correlationId": "01a1a3e2-7ebb-7765-b59c-508f9ce6e6f9",
+    "category": "VALIDATION_ERROR"
+  },
+  "headers": {
+    "x-hubspot-ratelimit-daily": "250000",
+    "x-hubspot-ratelimit-daily-remaining": "249953",
+    "x-hubspot-ratelimit-interval-milliseconds": "10000",
+    "x-hubspot-ratelimit-max": "100",
+    "x-hubspot-ratelimit-remaining": "99",
+    "x-hubspot-ratelimit-secondly": "10",
+    "x-hubspot-ratelimit-secondly-remaining": "9"
+  }
+}

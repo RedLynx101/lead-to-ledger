@@ -1,0 +1,16 @@
+{
+  "status": 400,
+  "body": {
+    "Fault": {
+      "Error": [
+        {
+          "Message": "Error parsing query",
+          "Detail": "QueryParserError: Encountered \"<EOF>\" at line 1, column 11.\nWas expecting:\n    <IDENTIFIER> ...\n    ",
+          "code": "4000"
+        }
+      ],
+      "type": "ValidationFault"
+    },
+    "time": "2026-11-03T16:08:18.781-08:00"
+  }
+}

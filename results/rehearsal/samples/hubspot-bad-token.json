@@ -1,0 +1,10 @@
+{
+  "status": 401,
+  "body": {
+    "status": "error",
+    "message": "The access token is not valid.",
+    "correlationId": "f4cd3163-512b-4b33-81f2-5ade63524a72",
+    "category": "INVALID_AUTHENTICATION"
+  },
+  "headers": {}
+}

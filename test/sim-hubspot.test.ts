@@ -108,10 +108,10 @@ describe('HubSpot simulator', () => {
       assert.equal(patched.body.properties.firstname, 'New');
     });
 
-    test('a missing record is a 404', async () => {
+    test('a missing record is a 404 with an empty body, as the real API sent', async () => {
       const res = await call('GET', '/crm/v3/objects/contacts/999999');
       assert.equal(res.status, 404);
-      assert.equal(res.body.category, 'OBJECT_NOT_FOUND');
+      assert.equal(res.body ?? null, null);
     });
 
     test('defined properties with no value come back null; undefined ones are omitted', async () => {
@@ -290,7 +290,7 @@ describe('HubSpot simulator', () => {
     test('hasUniqueValue blocks a second record with the same value', async () => {
       const unique = { groupName: 'dealinformation', name: 'ltl_source_key', label: 'Source key', type: 'string', fieldType: 'text', hasUniqueValue: true };
       assert.equal((await call('POST', '/crm/v3/properties/deals', unique)).status, 201);
-      const deal = { properties: { dealname: 'One', dealstage: 'closedwon', ltl_source_key: 'abc' } };
+      const deal = { properties: { dealname: 'One', dealstage: 'closedwon', pipeline: 'default', ltl_source_key: 'abc' } };
       const first = await call('POST', '/crm/v3/objects/deals', deal);
       assert.equal(first.status, 201);
       const second = await call('POST', '/crm/v3/objects/deals', deal);
@@ -305,7 +305,7 @@ describe('HubSpot simulator', () => {
     test('create with a contact association, then read it back two ways', async () => {
       const contact = await call('POST', '/crm/v3/objects/contacts', { properties: { email: 'm@sample.example.com' } });
       const deal = await call('POST', '/crm/v3/objects/deals', {
-        properties: { dealname: 'Rooftop units', dealstage: 'contractsent', amount: '12500' },
+        properties: { dealname: 'Rooftop units', dealstage: 'contractsent', pipeline: 'default', amount: '12500' },
         associations: [{ to: { id: contact.body.id }, types: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 3 }] }],
       });
       assert.equal(deal.status, 201);
@@ -322,22 +322,25 @@ describe('HubSpot simulator', () => {
 
     test('a default association can be added later', async () => {
       const contact = await call('POST', '/crm/v3/objects/contacts', { properties: { email: 'n@sample.example.com' } });
-      const deal = await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Chiller', dealstage: 'contractsent' } });
+      const deal = await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Chiller', dealstage: 'contractsent', pipeline: 'default' } });
       const put = await call('PUT', `/crm/objects/2026-09/deals/${deal.body.id}/associations/default/contacts/${contact.body.id}`);
       assert.equal(put.status, 200);
       const read = await call('GET', `/crm/v3/objects/deals/${deal.body.id}?associations=contacts`);
       assert.equal(read.body.associations.contacts.results.length, 1);
     });
 
-    test('dealname and dealstage are required, and the stage must exist', async () => {
+    test('dealname, dealstage and pipeline are required, and the stage must exist', async () => {
+      const noPipeline = await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'x', dealstage: 'closedwon' } });
+      assert.equal(noPipeline.status, 400);
+      assert.match(noPipeline.body.message, /required properties were missing: \[pipeline\]/);
       assert.equal((await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'x' } })).status, 400);
-      assert.equal((await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'x', dealstage: 'made_up' } })).status, 400);
+      assert.equal((await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'x', dealstage: 'made_up', pipeline: 'default' } })).status, 400);
     });
 
     test('closed-won deals can be polled with a stage filter and a modified-since cursor', async () => {
       const start = Date.now() - 1000;
-      const deal = await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Won', dealstage: 'contractsent' } });
-      await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Open', dealstage: 'contractsent' } });
+      const deal = await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Won', dealstage: 'contractsent', pipeline: 'default' } });
+      await call('POST', '/crm/v3/objects/deals', { properties: { dealname: 'Open', dealstage: 'contractsent', pipeline: 'default' } });
       await call('PATCH', `/crm/v3/objects/deals/${deal.body.id}`, { properties: { dealstage: 'closedwon' } });
       const res = await call('POST', '/crm/v3/objects/deals/search', {
         filterGroups: [{ filters: [

@@ -59,7 +59,7 @@ describe('invoice path', () => {
 
   async function wonDeal(name = 'a', amount = '12500', stage = 'closedwon') {
     const contact = await hubspot.upsertContactByEmail(`${name}@cedar.example.com`, { firstname: 'Pat', lastname: name, company: `Cedar ${name}` });
-    const deal = await hubspot.createDeal({ dealname: `Deal ${name}`, dealstage: stage, amount, closedate: '2026-10-30T00:00:00Z' }, contact.id);
+    const deal = await hubspot.createDeal({ dealname: `Deal ${name}`, dealstage: stage, pipeline: 'default', amount, closedate: '2026-10-30T00:00:00Z' }, contact.id);
     return { contact, deal };
   }
 
@@ -169,8 +169,8 @@ describe('invoice path', () => {
 
     test('a deal with no amount or no contact needs a person, and recovers when fixed', async () => {
       const contact = await hubspot.upsertContactByEmail('n@cedar.example.com', { firstname: 'N' });
-      const noContact = await hubspot.createDeal({ dealname: 'No contact', dealstage: 'closedwon', amount: '100' });
-      const noAmount = await hubspot.createDeal({ dealname: 'No amount', dealstage: 'closedwon' }, contact.id);
+      const noContact = await hubspot.createDeal({ dealname: 'No contact', dealstage: 'closedwon', pipeline: 'default', amount: '100' });
+      const noAmount = await hubspot.createDeal({ dealname: 'No amount', dealstage: 'closedwon' , pipeline: 'default'}, contact.id);
       await poll();
       assert.equal((await jobFor(noContact.id)).status, 'needs_person');
       assert.match(String((await jobFor(noContact.id)).problem), /no contact/);
@@ -324,7 +324,7 @@ describe('invoice path', () => {
     test('two deals for one contact share one customer', async () => {
       const contact = await hubspot.upsertContactByEmail('s@cedar.example.com', { firstname: 'S', company: 'Shared' });
       for (const name of ['one', 'two']) {
-        const deal = await hubspot.createDeal({ dealname: name, dealstage: 'closedwon', amount: '100', closedate: '2026-10-30T00:00:00Z' }, contact.id);
+        const deal = await hubspot.createDeal({ dealname: name, dealstage: 'closedwon', pipeline: 'default', amount: '100', closedate: '2026-10-30T00:00:00Z' }, contact.id);
         await poll();
         const job = await jobFor(deal.id);
         await approveJob(db, job.id, job.digest, 'Test');

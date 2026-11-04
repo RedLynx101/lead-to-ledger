@@ -170,7 +170,7 @@ function validationError(failures: Array<{ name: string; code: string; message: 
     message: f.message,
     error: f.code,
     name: f.name,
-    localizedErrorMessage: f.message,
+    details: [],
   }));
   return hsError(400, 'VALIDATION_ERROR', `Property values were not valid: ${JSON.stringify(detail)}`, {
     errors: failures.map((f) => ({ message: f.message, code: f.code, context: { propertyName: [f.name] } })),
@@ -350,7 +350,7 @@ export function createHubSpotSim(overrides: Partial<HubSpotConfig> = {}): Vendor
       indexQueue: [],
     };
     records.set(`${type}:${id}`, record);
-    applyProperties(record, type === 'deals' ? { pipeline: 'default', ...input } : input);
+    applyProperties(record, input);
     return record;
   }
 
@@ -568,8 +568,10 @@ export function createHubSpotSim(overrides: Partial<HubSpotConfig> = {}): Vendor
           associations?: Array<{ to?: { id?: string }; types?: Array<{ associationCategory: string; associationTypeId: number }> }>;
         };
         const props = body.properties ?? {};
-        if (type === 'deals' && (!props.dealname || !props.dealstage)) {
-          return validationError([{ name: 'dealname', code: 'REQUIRED_PROPERTY', message: 'dealname and dealstage are required' }]);
+        if (type === 'deals') {
+          // The wording is what the real API returned on 2026-11-03 for a deal with no pipeline.
+          const missing = ['dealname', 'dealstage', 'pipeline'].filter((k) => !props[k]);
+          if (missing.length > 0) return hsError(400, 'VALIDATION_ERROR', `Cannot create object with type: DEAL. The following required properties were missing: [${missing.join(', ')}]`);
         }
         const failed = checkProperties(type, props);
         if (failed) return failed;
@@ -603,6 +605,9 @@ export function createHubSpotSim(overrides: Partial<HubSpotConfig> = {}): Vendor
       const idProperty = req.query.get('idProperty');
       const record = findRecord(type, first, idProperty);
       if (!record) {
+        // The real API answered a GET for a missing contact with 404 and an empty body (2026-11-03).
+        // What a PATCH to a missing record returns wasn't checked, so it keeps the documented-looking body.
+        if (req.method === 'GET') return { status: 404 };
         return hsError(404, 'OBJECT_NOT_FOUND', 'Object not found.  objectId are usually numeric.', { context: { id: [first] } });
       }
       if (req.method === 'GET') {
