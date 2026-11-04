@@ -335,7 +335,7 @@ const frame = (title: string, shotHtml: string, caption: string) => (u: number) 
 const video: Array<[string, (u: number) => string, number]> = [
   ['01', cards.cover!, 5],
   ['02', frame('A lead comes in through the web form', shot(formShot, 'localhost:4000 &nbsp;·&nbsp; a fictional HVAC company', { fit: 'fill' }), 'The submission is <b>saved to Postgres first</b>, then handed to n8n. If n8n is down, it waits and is sent again.'), 5],
-  ['03', frame('n8n sorts what plain rules can', shot('n8n-workflow', 'localhost:5678'), 'Rules run in a Code node. The contact is upserted by email <b>before</b> the AI step, so a dead model cannot lose a lead.'), 6],
+  ['03', frame('n8n sorts what plain rules can handle', shot('n8n-workflow', 'localhost:5678'), 'Rules run in a Code node. The contact is upserted by email <b>before</b> the AI step, so a dead model cannot lose a lead.'), 6],
   ['04', frame('Shadow mode: the model answers, nothing is written', shot('status-shadow', 'localhost:4000/status', { fit: 'fill' }), 'Its answers are logged as what <b>would</b> be written. Going live needs a named sign-off on a scored run.'), 6],
   ['05', frame('Live: only ai_ fields, from a fixed list', shot('status-live', 'localhost:4000/status', { fit: 'fill' }), `Rules handle what they can. The model (${facts.model}) writes notes; <b>sales still decides</b>.`), 6],
   ['06', frame('A won deal waits for a person', shot('approvals-waiting', 'localhost:4000/approvals', { crop: APPROVALS_CROP }), 'The approval covers <b>one exact version</b>. Edit the deal afterwards and it comes back for approval.'), 5],
